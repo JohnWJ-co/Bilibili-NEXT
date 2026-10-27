@@ -1,0 +1,263 @@
+---
+name: comet-open
+description: '创建 Classic change，整理需求并请用户确认。在用户调用 /comet-open，或 Classic 进入 Open、恢复初始化时使用。'
+---
+
+# Comet 阶段 1：开启（Open）
+
+首次进入阶段、交接给新 Agent 或上下文恢复后，读取并执行 [任务上下文与产物语言](../comet-classic/reference/scripts.md#任务上下文与产物语言)，优先采用当前 continuation 或已领取 Action 的 `contextRequest`；同一阶段连续执行不重复获取。
+
+开始或恢复任务前，必须先读取并遵守 `comet-classic/reference/classic-layout.md`。本文件中的 OpenSpec CLI 调用必须通过适配器执行，文件路径必须基于该协议绑定的 `<classic-*>` 逻辑根目录。
+
+## 前置条件
+
+- 无活跃 change，或用户希望创建新 change
+
+## 步骤
+
+### 0. 设置输出语言
+
+向 OpenSpec 传递提问和文档生成要求时，都必须明确指定 Comet 配置的产物语言，使用 `en`、`zh-CN` 这类规范化 ID。change 尚未初始化时，依次读取项目 `.comet/config.yaml` 和全局 `~/.comet/config.yaml` 的 `classic.language`；初始化后，复用当前有效响应中的 `configuration.language`；缺少时才使用 `comet state get <name> language` 读取。没有配置语言时，才采用当前用户请求的语言。生成的 `proposal.md`、`design.md`、`tasks.md` 必须以该语言为主。
+
+### 0a. 当前 change 绑定
+
+响应已有 `agent.continuation.mode` 时，先按 `comet-classic/reference/auto-transition.md` 处理；`wait` 按 auto-transition.md 区分手动衔接和原任务等待，不能因兼容字段 `nextAction.kind: reconcile` 再做恢复查询。使用当前响应的命令与输入；Skill 工作实际完成后才使用 `completion` 提交。下文依据 `nextAction.kind` 的恢复规则仅用于没有 `mode` 的旧响应。
+
+恢复已有 change 时，复用同一工作区和 Run 的最新有效 continuation 与归属；冷恢复、外部状态变化或信息缺失时才运行 `comet state next <name> --json`，再按 `data.runtimeFormat` 处理：
+
+- `sdk`：复用现有 Run，按 `data.nextAction.kind` 恢复；已领取但结果未明的 Action 先核对原结果，不重新创建 change 或重发外部工作。
+- `compat`：复用原流程和 `.comet.yaml`；不能自动把该 change 改建为 SDK Run。
+- 命令失败：核对错误、归属记录、Run 和实际状态文件。归属冲突或状态格式异常时停止并报告；若本地 Run 记录丢失，先检查状态文件中的 `run_checkpoint`，按 `/comet-classic` 的恢复步骤沿用已保存阶段。旧状态没有检查点且用户明确同意重启时，才回到 Open 重新核对证据和确认。只有证实尚无任何 Runtime 归属、change 目录有效时，才按所选隔离方式准备工作区并初始化。不得因缺少某一个文件名就重新初始化。
+
+SDK 与旧 change 在冷恢复、工作区变化或绑定信息缺失时，通过以下命令核对并绑定工作区；已有有效选择和 projectRoot 时直接复用：
+
+```bash
+comet classic workspace resolve <change-name> --json
+# 进入返回的 projectRoot
+comet state select <change-name>
+```
+
+创建新 change 时，在创建 OpenSpec 基础目录后立即初始化 SDK Run，再运行上述 select 命令；初始化前不得手工写入 change 选择记录。
+
+### 0b. Open 前工作区决策与准备
+
+创建 Classic change 时，读取 `comet-classic/reference/workspace.md`。必须先确定工作区，再创建 OpenSpec 产物和 SDK Run，不能推迟到 Build：
+
+- 用户明确要求并行工作时，直接使用 `worktree`；先准备好独立工作区，再创建 OpenSpec 产物和 state
+- 用户未指定隔离方式时，按参考文档处理：需要用户选择时，展示可用的 `current`、`branch`、`worktree` 选项，推荐理由不能代替用户选择
+- 用户选择 `current` 或 `branch` 时，仍应串行工作，不得将其描述为适合多个会话同时使用
+
+新 change 在运行 OpenSpec `new` 前准备工作区：
+
+```bash
+comet classic workspace prepare <name> --isolation <current|branch|worktree> --json
+# 进入返回的 projectRoot；后续 OpenSpec、state 和产物写入都必须在该目录执行
+```
+
+准备命令会复用已登记且分支匹配的 Worktree；分支仍在但已登记的 Worktree 被移除时，会重建 Worktree。只有分支已重命名、被用户用于其他工作，或无法确认归属时，才暂停，请用户明确确认 rebind。
+
+### 0c. OpenSpec 兼容性检查
+
+首次使用或上游安装发生变化时运行一次，记录用于排错的版本：
+
+```bash
+comet classic openspec -- --version
+```
+
+兼容性必须通过实际能力检查，不能只凭版本号判断。status 必须提供 `changeRoot`、`applyRequires`，以及每个产物的 `requires`、`outputPath`、`status`；instructions 必须提供可用的 `resolvedOutputPath`。当前适配已核对 OpenSpec 1.11.0/1.12.0 的状态接口要求，不保证兼容所有历史版本。命令不可用、返回非零或缺少必需能力时，停止并展示错误和升级建议，不自动升级用户环境。
+
+创建 change 后，由 `comet state artifacts <name> --json` 校验路径、全部必需依赖和实际文件。该命令会展开 `applyRequires` 和 Classic 必需的 proposal/tasks 的所有依赖，形成完整依赖闭包。闭包要求生成 design 时，不能因为 instructions 称其“可选”就跳过；闭包不要求 design 时，不强制生成。
+
+只有需求不涉及行为规格变更、`.openspec.yaml` 明确设置了 `skip_specs: true`，且没有冲突的规格文件时，才允许跳过 specs。当前支持 proposal/specs/design/tasks 角色；遇到不支持的必需角色或输出模式时，必须明确报告，不能自行猜测处理方式。
+
+### 1. 探索想法与需求澄清
+
+**立即执行：** 使用 Skill 工具加载 `openspec-explore` 技能。禁止跳过此步骤。
+
+<!-- external-openspec-skill-override -->
+
+**外部 OpenSpec Skill 适配规则：** 加载后只采用其探索方法，不执行其中直接运行官方 CLI、切换到固定 cwd，或读写写死的 OpenSpec 目录的指令。所有 CLI 调用改用 `comet classic openspec -- <args...>`，所有文件路径改用本轮绑定的 `<classic-*>` 逻辑根目录。
+
+技能加载后，先复用用户提供的 PRD、设计与已确认事实，围绕下列内容检查缺口并形成澄清摘要。只对会改变范围、方案或验收的未知项提问；信息已足够时可以不追加问答，不设置最低澄清轮数：
+
+- 目标：用户真正要解决的问题和期望结果
+- 非目标：本次明确不做的内容
+- 范围边界：涉及/不涉及的模块、用户、平台或数据
+- 关键未知项：仍不确定的假设、风险或依赖
+- 验收场景草案：至少覆盖核心成功场景和关键边界场景
+
+澄清摘要必须包含：目标、非目标、范围边界、关键未知项、验收场景草案。
+
+需要向用户澄清时，必须先读取 `comet-classic/reference/decision-point.md`，以明确问题、推荐及理由、各选项影响的形式提问，并优先使用可用的 `AskUserQuestion`。只询问当前缺口；事实或素材无法提供真实选项时说明缺失内容后请求补充。外部探索 Skill 的提问也应用该协议，不能因加载了探索方法而省略选项或替用户选择。
+
+引用完整 PRD 时，给出文件路径和相关章节，不复制全文。已确认的事实不重复征求同意；发现矛盾时，只澄清矛盾点。OpenSpec 技能仍是必需依赖，探索结束后必须返回 Comet，不能由外部 Skill 自行进入设计、实施或归档。探索中的确认不能代替 Open 最后的产物确认。
+
+### 1a. 创建前确认是否拆分 PRD
+
+用户提供大型 PRD、路线图、完整产品方案，或需求包含多个可独立交付的目标时，创建产物前读取并执行[PRD 拆分与批量恢复](reference/batch-changes.md)。恢复 `.comet/batches/<batch-id>.json` 中的一批 changes 时也读取该参考。普通单 change 直接继续；已确认的拆分项复用原范围。
+
+### 1b. 整理需求并确定 Change 名称
+
+创建 OpenSpec 产物前，把 Step 1 的澄清结果整理为需求摘要（resolved brief），包括目标、非目标、范围边界、关键未知项和验收场景草案。根据这份摘要，拟定一个能准确表达范围的 kebab-case 英文 change 名称。
+
+- **范围与命名都明确时直接继续**，不得仅为了让用户批准摘要或名称而创建停顿点；最终审视会统一确认 change 名称、范围和产物内容
+- 用户已经提供名称时，规范化为 kebab-case 并在进度说明中回显；规范化不改变含义时无需再次确认
+- 已确认批量拆分项直接复用批量清单中的摘要与名称；检测到范围漂移或清单信息缺失时，才重新澄清
+- 只有仍需在不同范围或不同目标 change 之间作出选择时，才按 `comet-classic/reference/decision-point.md` 将相关问题合并提问；不能仅因命名偏好而单独暂停
+
+OpenSpec change 名称必须是 kebab-case 英文（小写字母、数字、单连字符）。名称冲突但目标仍明确时，拟定一个不冲突且含义一致的名称，然后继续。只有无法判断应复用现有 change 还是创建新 change 时，才交给用户选择。
+
+resolved brief 或 change 名称仍不明确时不得运行 `comet classic openspec -- new change`，也不得创建 proposal/design/tasks；继续澄清或处理真正的用户决策后再进入 Step 2。
+
+### 2. 创建 Change 结构 + 初始化状态
+
+本节沿用 [SDK 创建顺序](../comet-classic/reference/sdk-methods.md#开始与产物)：OpenSpec 先创建基础目录，再初始化 SDK Run。已有 Run 时只恢复，不重建目录或状态。
+
+**立即执行：** 使用 Skill 工具加载 `openspec-new-change` 技能。禁止跳过此步骤。
+
+<!-- external-openspec-skill-override -->
+
+**外部 OpenSpec Skill 适配规则：** 加载后只采用其创建 change 的方法，不执行其中直接运行官方 CLI、切换到固定 cwd，或把 change 写到固定 OpenSpec 根目录的指令。创建、status 与 instructions 全部改用 `comet classic openspec -- <args...>`，文件路径全部改用 `<classic-change-dir>` 等本轮逻辑根目录。
+
+完整 `/comet-classic` 流程默认不得使用 Skill 工具加载 `openspec-propose` 技能；只有用户明确要求一次性生成提案和其他产物时，才允许加载。
+
+<!-- external-openspec-skill-override -->
+
+**外部 OpenSpec Skill 适配规则：** 使用 `openspec-propose` 时，同样不能直接运行官方 CLI、采用固定 cwd 或读写固定 OpenSpec 目录。命令必须通过适配器执行，产物必须写入路径解析器返回的 `<classic-*>` 逻辑根目录。
+
+技能加载后，按其指引创建 change 的基础目录和文件。Step 1b 已形成范围明确的 resolved brief 时，不再执行其中的 "STOP and wait for user direction"，直接继续，避免重复询问。
+
+直接使用 Step 1b 的 resolved brief 填充产物内容。只有 brief 仍有会改变范围的歧义时，才回退到技能的提问流程。
+
+change 的基础目录和文件创建后，立即初始化 SDK Run，以便中断后恢复；不能等所有产物都生成后才初始化（入口状态验证统一在 Step 3 执行，这里不重复）：
+
+```bash
+comet state init <name> full --isolation <selected-isolation>
+comet state select <name> --json
+```
+
+任一命令失败都停止。选择结果必须返回 `runtimeFormat: sdk`、`phase: open` 和当前 Run 的待执行 Action；缺少这些字段时才运行 `comet state next <name> --json` 补读。随后运行一次 `comet classic openspec --agent-json -- status --change "<name>" --json` 并执行兼容性预检：
+
+- `changeRoot` 解析后必须等于路径解析器绑定的 `<classic-change-dir>`，`planningHome`（如存在）也必须位于当前仓库；不支持仓库外的产物路径
+- `artifacts` 必须包含 Classic 必需 ID `proposal`、`tasks`，其他要求沿 `requires` 递归展开
+- `applyRequires` 必须是可解析的产物 ID 列表；直接引用和间接依赖的产物都必须存在，且不能循环依赖
+- 返回数据缺少字段、路径越界或必需 ID 缺失时，立即停止，不能改用猜测的固定模板
+
+预检通过后，按 OpenSpec CLI 返回的 schema 和依赖图生成实施所需的产物：
+
+Agent JSON 模式下，从 `data.upstream.data` 读取上游字段。下一步必须使用 `data.nextAction` 返回的完整 argv，并在其指定的 cwd 执行；上游原始 nextSteps 仅用于诊断。
+
+**根据 OpenSpec 状态逐项生成产物**：
+
+1. 首轮复用 Step 2 兼容性预检刚返回的 status；后续复用上一轮写入后刷新的 status。只有恢复或外部产物变化时重新运行 `comet classic openspec --agent-json -- status --change "<name>" --json`，从 `data.upstream.data` 读取完整上游 JSON。
+2. 展开 `applyRequires` 加 proposal/tasks 的完整依赖闭包。闭包中每项都为 `done` 或合法 `skipped` 时运行 `comet state artifacts <name> --json`，仅校验通过才退出循环；顶层 tasks 已完成不能掩盖未完成依赖。`isComplete` 只作诊断。
+3. 在尚未完成、状态为 `status: "ready"` 的产物中，优先处理 `applyRequires` 所需的依赖，并遵循 CLI 返回的顺序。不得写死生成顺序，也不能假设 schema 只有 proposal/design/tasks。
+4. 对每个 ready 的 `<artifact-id>` 获取实时指令：
+
+   ```bash
+   comet classic openspec --agent-json -- instructions <artifact-id> --change "<name>" --json
+   ```
+
+5. 根据返回的 JSON 指令，必须完成以下操作：
+   - 读取 `dependencies` 中列出的每个已完成依赖产物
+   - 以 `template` 作为产物结构
+   - 遵循 `instruction` 的指引
+   - 遵守 `context` 和 `rules` 中的约束，**不得将这些内容复制到产物中**
+   - 写入 `resolvedOutputPath`；通配输出必须按 instruction 创建每个实际文件
+   - 验证 CLI 返回的实际输出文件存在且非空
+6. 每创建一个产物后，用 `comet state artifacts <name> --json` 做本地闭包校验（不启动 OpenSpec 子进程），仅当它报告依赖缺失或顺序错误、需要新的实时指令时，才刷新一次 status 并再次校验路径与完整依赖闭包。已经变为 `done` 的项不得重复生成；只处理闭包中新增的 ready 项，不额外生成无关的可选产物。
+
+**阻塞与失败处理**：`applyRequires` 尚未全部完成、但其所需依赖中已没有 ready 产物时，必须报告相关 `blocked` 产物的 `missingDeps`，然后停止。不得猜测生成顺序或跳过依赖。适配器的 `status` / `instructions` 调用失败、返回无效 JSON、产物路径超出仓库，或未提供可用的 `resolvedOutputPath` 时，也必须立即停止并报告 OpenSpec 错误，不能改用写死的文档结构。
+
+**核对名称和变更范围**：change name 必须使用 Step 1b 解析出的 kebab-case 英文名，不得使用非 kebab-case（如中文）名称。变更范围必须与 resolved brief 和用户描述一致，不得自行扩大或缩小。
+
+确认以下产物已创建：
+
+```
+<classic-change-dir>/
+├── .openspec.yaml
+├── proposal.md       # Why + What：问题、目标、范围
+├── design.md         # 仅在依赖要求或实际需要时创建，保存技术决策，不复制到第二份设计文档
+└── tasks.md          # 任务清单（勾选框）
+```
+
+SDK Run 保存在用户级工作区 Runtime 目录；新 change 保存 `comet-state.yaml`，历史 `.comet.yaml` 原地保留；恢复时通过 `state next` 和 `state check` 读取 Run，不直接编辑 Run 的存储文件。
+
+### 3. 入口状态验证
+
+已有初始化或选择成功返回的同一 Run、Open phase、工作区和 revision 时，直接继续 Step 4。冷恢复、外部状态变化或必要信息缺失时才验证初始化状态：
+
+```bash
+comet state check <name> open
+```
+
+验证通过后继续 Step 4。验证失败时脚本会输出具体失败原因。
+
+**恢复未完成的创建步骤**：open 阶段的操作允许安全重试；恢复时按以下顺序识别已完成的部分，只补未完成的工作：
+
+1. 先运行 `comet state next <name> --json` 确认归属。`runtimeFormat: sdk` 时复用原 Run；`runtimeFormat: compat` 时保留原流程。只有证实没有 Run、归属记录及新旧两种状态文件，才准备工作区并运行 `comet state init <name> full --isolation <selected-isolation>`；格式异常或归属冲突时停止，不覆盖。随后选择 change 并运行 `comet state check <name> open`。
+2. 运行 `comet classic openspec --agent-json -- status --change "<name>" --json`，重新验证 `changeRoot`、核心 ID、`applyRequires`、`artifacts` 和 `missingDeps`。
+3. `done`：该产物已完成，保持原文件不变，不重复生成。
+4. `ready`：依赖已经满足，可以生成。先运行 `comet classic openspec --agent-json -- instructions <artifact-id> --change "<name>" --json`，按返回内容写入；写完后用 `comet state artifacts <name> --json` 做本地闭包校验，不重新运行 status。
+5. `blocked`：读取 `missingDeps`，先完成属于 `applyRequires` 依赖闭包的依赖产物；每完成一个依赖用 `comet state artifacts <name> --json` 校验，仅在报告新问题时重新运行 status，不能直接生成 blocked 产物。
+6. 重复上述处理，直到完整必需闭包为 done 或合法 skipped，且 `comet state artifacts <name> --json` 校验通过。
+
+如果必需依赖仍无法完成，必须列出相关 blocked 产物及其 `missingDeps`，然后停止并报告。不能仅凭目录或三个固定文件存在，就替代 CLI 的检查结论；也不能因为 `isComplete: false`，就让不属于 `applyRequires` 的可选产物阻止流程进入实施阶段。
+
+### 4. 内容完整性检查
+
+使用最近一次 `comet state artifacts <name> --json` 的成功结果核对必需产物；文件或 schema 变化后必须重新运行。任一问题未解决时，不得进入 Step 5 或执行阶段守卫。
+
+随后检查关键产物的内容：proposal 应说明问题、目标、范围和非目标；design 应说明高层决策与数据流；tasks 应列出明确任务。schema 返回 specs 等其他产物时，也必须按对应的 instructions 检查内容，不能因为 proposal、design、tasks 三个文件已经存在就跳过。
+
+### 5. 请用户确认产物
+
+全部 OpenSpec 产物完成且内容完整性检查通过后，使用当前有效响应的 `runtimeFormat`；归属信息缺失或发生外部变化时才运行 `comet state next <name> --json`。SDK change 再运行 `comet guard <change-name> open --json` 取得预检结果、内容摘要和 `data.approvalHash`；预检未通过时先修复问题。随后**必须按 `comet-classic/reference/decision-point.md` 的协议暂停并等待用户确认**。不得在用户确认前应用阶段守卫或自动进入下一阶段。
+
+最终审视同时确认 change 名称、范围和产物内容；不得因 Step 1b 已完成解析而省略，也不得在此之前再增加一次常规摘要/命名确认。
+
+用户确认问题必须以单选题形式呈现，包含以下摘要和选项：
+
+**摘要内容**：
+
+- **change 名称与 resolved brief**：最终名称、目标、非目标、范围边界和关键未知项
+- **proposal.md**：问题背景、目标、范围
+- **schema 要求的 specs 等产物**：功能、需求和关键验收场景
+- **design.md**：高层架构决策、方案选型
+- **tasks.md**：任务数量和关键任务描述
+
+**选项**：
+
+- 「确认，继续下一阶段」— 产物符合预期，执行阶段守卫流转
+- 「需要调整」— 附带调整说明，修改后重新请求确认
+
+用户选择「确认」后继续执行退出条件。SDK change 必须沿用向用户展示的同一次预检返回的 `approvalHash`；用户选择「需要调整」时，按其说明修改对应文件，重新预检并请求确认，不能沿用旧哈希。
+
+## 退出条件
+
+- `comet state artifacts <name> --json` 通过：完整必需闭包已完成或合法跳过，所需实际输出非空
+- **用户已确认** 全部 OpenSpec 产物的内容符合预期
+- **阶段守卫**：SDK change 使用当前预检的 `approvalHash` 应用；旧 change 保留原有 `comet guard <change-name> open --apply`。全部 PASS 后由守卫推进到下一阶段。
+
+退出前必须应用阶段守卫，否则 Run 或旧 `.comet.yaml` 仍停留在 Open，下一阶段入口检查会失败。SDK 预检后若产物变化，应重新预检并让用户确认当前内容，不能拿旧哈希重试。
+
+```bash
+comet guard <change-name> open --apply --approval-hash <approvalHash>  # SDK
+comet guard <change-name> open --apply                           # legacy
+```
+
+完整流程会自动更新为 `phase: design`；hotfix/tweak 预设会自动更新为 `phase: build`。
+
+## 自动衔接下一阶段
+
+SDK change 优先使用成功结果中同一 Run 的 `nextAction.kind`、phase 和 `agent.continuation` 继续；缺少时才运行 `comet state next <change-name> --json`：`action` 才加载返回的 Skill；`decision`、`evidence`、`reconcile` 先进入对应恢复步骤，不自动重放。旧 change 按 `comet-classic/reference/auto-transition.md` 和成功结果中的 `agent.continuation` 继续。已有仍然有效的状态信息时，不重复 next、select 或 check。只有丢失上下文后恢复任务、外部状态变化，或旧结果未提供这些信息时，才运行：
+
+```bash
+comet state next <change-name>
+```
+
+- `NEXT: auto` → 调用 `SKILL` 指向的 skill 进入下一阶段
+- `NEXT: manual` → 不调用下一 skill，按 `HINT` 交还控制权并结束当前调用；不再创建确认点
+- `NEXT: done` → 流程已完成，无需继续
+
+hotfix/tweak 预设由对应预设 Skill 控制后续流转（phase 直接进入 build），其 `next` 会返回对应预设 Skill。
