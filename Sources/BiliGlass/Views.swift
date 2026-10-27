@@ -5,6 +5,9 @@ let biliPink = Color(red: 0.86, green: 0.24, blue: 0.43)
 struct RootView: View {
   @Bindable var store: Store
   @Environment(\.scenePhase) private var phase
+  @Environment(\.accessibilityReduceMotion) private var reduceMotion
+  @AppStorage("interfaceAnimations") private var animations = true
+  @AppStorage("sidebarCollapsed") private var sidebarCollapsed = false
   @FocusState private var searchFocused: Bool
   @State private var diagnosticChallenge: InteractionChallenge?
   var body: some View {
@@ -12,7 +15,8 @@ struct RootView: View {
       if !store.fullscreen.isPresented { GlassBackdrop() }
       GeometryReader { viewport in
       HStack(alignment: .top, spacing: 20) {
-        sidebar(compact: viewport.size.height < 820).frame(width: AppLayout.sidebarWidth)
+        sidebar(compact: viewport.size.height < 820, collapsed: sidebarCollapsed)
+          .frame(width: sidebarWidth)
         VStack(spacing: 16) {
           GlassEffectContainer { topbar }
           if let reason = store.loginUpgradeReason, !store.loginUpgradeDismissed {
@@ -29,6 +33,7 @@ struct RootView: View {
             RoundedRectangle(cornerRadius: 24))
         }
       }.padding(.horizontal, 20).padding(.bottom, 20).padding(.top, 22)
+        .animation(sidebarAnimation, value: sidebarCollapsed)
         .opacity(store.fullscreen.isPresented ? 0 : 1)
         .allowsHitTesting(!store.fullscreen.isPresented)
         .accessibilityHidden(store.fullscreen.isPresented)
@@ -147,29 +152,119 @@ struct RootView: View {
       if !store.showPlayer { searchFocused = false; NSApp.keyWindow?.makeFirstResponder(nil) }
     }
   }
-  private func sidebar(compact: Bool) -> some View {
+  private var sidebarWidth: CGFloat {
+    sidebarCollapsed ? AppLayout.sidebarRailWidth : AppLayout.sidebarWidth
+  }
+  private var sidebarAnimation: Animation? {
+    animations && !reduceMotion ? .smooth(duration: 0.22) : nil
+  }
+  private func sidebar(compact: Bool, collapsed: Bool) -> some View {
     VStack(spacing: compact ? 14 : 20) {
       HStack(spacing: 10) {
-        Image(systemName: "play.rectangle.fill").font(.title2).foregroundStyle(biliPink)
-        Text("Bilibili NEXT").font(.title3.weight(.semibold))
-        Spacer(minLength: 0)
-        SettingsLink { Image(systemName: "slider.horizontal.3") }.buttonStyle(.plain).help("设置")
-      }.padding(.horizontal, 18).frame(height: AppLayout.toolbarHeight).floatingGlass(AppLayout.panelRadius)
-        .fixedSize(horizontal: false, vertical: true)
+        sidebarLogo(collapsed: collapsed)
+        if !collapsed {
+          Text("Bilibili NEXT").font(.title3.weight(.semibold))
+          Spacer(minLength: 0)
+        }
+      }.padding(.horizontal, collapsed ? 6 : 18).frame(height: AppLayout.toolbarHeight)
+        .floatingGlass(AppLayout.panelRadius).fixedSize(horizontal: false, vertical: true)
       ScrollView {
         // Glass sampling must stay inside the scrolling viewport. Sharing a
         // container with the fixed account footer lets the scrolled glass/text
         // render through that footer on short windows.
         GlassEffectContainer(spacing: 16) {
           VStack(spacing: compact ? 14 : 20) {
-            navigationGroup("浏览", items: [.recommend, .popular, .regions, .dynamic, .messages], compact: compact)
-            navigationGroup("资料库", items: [.history, .favorites, .later, .downloads, .profile, .web], compact: compact)
+            if collapsed {
+              navigationRail(items: [.recommend, .popular, .regions, .dynamic, .messages])
+              navigationRail(items: [.history, .favorites, .later, .downloads, .profile, .web])
+            } else {
+              navigationGroup("浏览", items: [.recommend, .popular, .regions, .dynamic, .messages], compact: compact)
+              navigationGroup("资料库", items: [.history, .favorites, .later, .downloads, .profile, .web], compact: compact)
+            }
           }.padding(2)
         }
       }.frame(minHeight: 0, maxHeight: .infinity)
         .scrollIndicators(.hidden).compositingGroup().clipped()
-      accountButton.fixedSize(horizontal: false, vertical: true)
+      accountFooter(collapsed: collapsed).fixedSize(horizontal: false, vertical: true)
     }.frame(maxHeight: .infinity)
+  }
+  // The logo is the only sidebar toggle; at rail width it fills the header so
+  // the whole card stays a comfortable hit target.
+  private func sidebarLogo(collapsed: Bool) -> some View {
+    Button {
+      sidebarCollapsed.toggle()
+    } label: {
+      Image(systemName: "play.rectangle.fill").font(.title2).foregroundStyle(biliPink)
+        .frame(maxWidth: collapsed ? .infinity : nil, maxHeight: collapsed ? .infinity : nil)
+        .contentShape(Rectangle())
+    }.buttonStyle(.plain).help(sidebarCollapsed ? "展开侧栏" : "收起侧栏")
+      .accessibilityLabel(sidebarCollapsed ? "展开侧栏" : "收起侧栏")
+      .keyboardShortcut("s", modifiers: [.command, .option])
+  }
+  private func navigationRail(items: [Destination]) -> some View {
+    VStack(spacing: 4) {
+      ForEach(items) { d in
+        Button {
+          store.navigate(d)
+        } label: {
+          let selected = store.destination == d && !store.showPlayer
+          Image(systemName: d.icon)
+            .font(.system(size: 17, weight: selected ? .semibold : .regular))
+            .frame(width: 20, height: 20)
+            .overlay(alignment: .topTrailing) { railIndicator(d).accessibilityHidden(true) }
+            .frame(maxWidth: .infinity).frame(height: 34).contentShape(
+              RoundedRectangle(cornerRadius: 12)
+            )
+            .background(selected ? biliPink.opacity(0.19) : .clear, in: .rect(cornerRadius: 12))
+            .foregroundStyle(.primary)
+        }.buttonStyle(NavigationButtonStyle()).tint(.primary).help(d.rawValue)
+          .accessibilityLabel(railLabel(d))
+      }
+    }.padding(6).floatingGlass(24)
+  }
+  @ViewBuilder private func railIndicator(_ d: Destination) -> some View {
+    if d == .messages && store.messageUnread.counts.total > 0
+      || d == .downloads && store.downloads.activeCount > 0 {
+      Circle().fill(biliPink).frame(width: 7, height: 7).offset(x: 4, y: -3)
+    }
+  }
+  private func railLabel(_ d: Destination) -> String {
+    switch d {
+    case .messages where store.messageUnread.counts.total > 0:
+      "\(d.rawValue)，\(store.messageUnread.counts.total) 条未读"
+    case .downloads where store.downloads.activeCount > 0:
+      "\(d.rawValue)，\(store.downloads.activeCount) 个下载中"
+    default: d.rawValue
+    }
+  }
+  @ViewBuilder private func accountFooter(collapsed: Bool) -> some View {
+    if collapsed { accountRail } else { accountButton }
+  }
+  private var accountRail: some View {
+    Group {
+      if let account = store.account {
+        Menu {
+          Button("我的主页") { store.navigate(.profile) }
+          SettingsLink { Text("设置") }
+          Button("重新登录") { store.login() }
+          Button("退出登录", role: .destructive) { store.logout() }
+        } label: {
+          Thumbnail(url: account.face, mode: .fill, placeholder: "person.crop.circle.fill")
+            .frame(width: 32, height: 32).clipShape(
+              Circle())
+            .frame(maxWidth: .infinity).contentShape(Rectangle())
+        }.buttonStyle(.plain).menuIndicator(.hidden).help(account.name)
+          .accessibilityLabel(account.name)
+      } else if store.restoring {
+        ProgressView().controlSize(.small).frame(maxWidth: .infinity)
+      } else {
+        Button {
+          store.login()
+        } label: {
+          Image(systemName: "person.crop.circle").font(.title2).frame(maxWidth: .infinity)
+        }.buttonStyle(.plain).help("登录").accessibilityLabel("登录")
+      }
+    }.frame(height: 58).floatingGlass(20)
   }
   private func navigationGroup(_ title: String, items: [Destination], compact: Bool) -> some View {
     VStack(alignment: .leading, spacing: 5) {
