@@ -329,27 +329,33 @@ struct RootView: View {
       }.help("刷新")
     }.buttonStyle(.glass).tint(.primary).padding(.horizontal, 12).frame(height: AppLayout.toolbarHeight).floatingGlass(AppLayout.panelRadius)
   }
-  @ViewBuilder private var content: some View {
-    if store.showPlayer {
-      PlayerPage(store: store)
-    } else {
-      switch store.destination {
-      case .recommend, .popular, .regions, .favorites, .later: browse
-      case .dynamic: NativeDynamicsPage(store: store)
-      case .profile:
-        if let account = store.account {
-          ProfilePage(store: store, mid: account.mid)
-        } else {
-          ContentUnavailableView {
-            Label("登录后查看主页", systemImage: "person.crop.circle")
-          } actions: {
-            Button("登录") { store.login() }
+  private var content: some View {
+    ZStack {
+      Group {
+        switch store.destination {
+        case .recommend, .popular, .regions, .favorites, .later: browse
+        case .dynamic: NativeDynamicsPage(store: store)
+        case .profile:
+          if let account = store.account {
+            ProfilePage(store: store, mid: account.mid)
+          } else {
+            ContentUnavailableView {
+              Label("登录后查看主页", systemImage: "person.crop.circle")
+            } actions: {
+              Button("登录") { store.login() }
+            }
           }
+        case .history: HistoryPage(store: store)
+        case .downloads: DownloadPage(store: store)
+        case .messages: NativeInboxPage(store: store)
+        case .web: WebFunctionsPage(store: store)
         }
-      case .history: HistoryPage(store: store)
-      case .downloads: DownloadPage(store: store)
-      case .messages: NativeInboxPage(store: store)
-      case .web: WebFunctionsPage(store: store)
+      }
+      .opacity(store.showPlayer ? 0 : 1)
+      .allowsHitTesting(!store.showPlayer)
+      .accessibilityHidden(store.showPlayer)
+      if store.showPlayer {
+        PlayerPage(store: store)
       }
     }
   }
