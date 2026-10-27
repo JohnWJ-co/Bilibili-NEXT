@@ -18,7 +18,7 @@ plan: null
 verify_result: pass
 verify_failures: 0
 verification_report: docs/superpowers/reports/websession-test-isolation.md
-branch_status: pending
+branch_status: handled
 created_at: 2026-10-27
 verified_at: 2026-10-27
 archive_confirmation: confirmed
@@ -31,7 +31,7 @@ classic_profile: null
 classic_migration: null
 run_checkpoint:
   schema: comet.workflow-run-checkpoint.v1
-  hash: 281adaaed498089c7d7d2b5fada06207e61f00cdc4117389bbcb7abd96b30414
+  hash: 3ac5ba37428b13475e69ae1b4c7e11b40079c66959b3751ab9fc523d7759a7c9
   run:
     protocolVersion: 1
     schemaVersion: 1
@@ -53,7 +53,7 @@ run_checkpoint:
       autoTransition: true
       baseRef: 68c8c3abea9de0ae4084c1964a3fd981ba66b3c7
       boundBranch: main
-      branchStatus: pending
+      branchStatus: handled
       buildMode: direct
       buildPause: null
       checkEpoch: 5
@@ -78,7 +78,7 @@ run_checkpoint:
       verifyMode: light
       verifyResult: pass
       workflow: hotfix
-    status: running
+    status: completed
     sequence: 14
     actions:
       - attempt: 1
@@ -756,6 +756,14 @@ run_checkpoint:
         stepId: hotfix.archive.execute
         type: call_tool
       - attempt: 1
+        claim:
+          executorId: comet-classic-delivery
+          token: portable-ec66f356c208264204de6586da63cf5f998efdc4c19e9b4e9194c1b286516531
+        executionOrigin:
+          workflow:
+            hash: 59c8440e5c03ef56376797cfb0bc38e82bb8dc8d5cfb7a7351795f7a73fefbe8
+            id: comet-classic-hotfix
+            version: "1"
         id: websession-test-isolation:14
         input:
           input:
@@ -853,14 +861,27 @@ run_checkpoint:
               event: verification-ready
               verificationReport: docs/superpowers/reports/websession-test-isolation.md
         inputHash: 42980a2760e963a1061fb65caf00822068c04eafa29e90672d4df6df70619d8e
+        outcome:
+          actionId: websession-test-isolation:14
+          attempt: 1
+          claimToken: portable-ec66f356c208264204de6586da63cf5f998efdc4c19e9b4e9194c1b286516531
+          inputHash: 42980a2760e963a1061fb65caf00822068c04eafa29e90672d4df6df70619d8e
+          outcomeId: fb929254-6627-4328-85a0-135f8349048d
+          output:
+            action: local
+            commit: b8bb2643642ac9c644bee14e7659c9e5fc53405c
+            targetBranch: main
+          status: succeeded
         protocolVersion: 1
-        receipts: []
+        receipts:
+          - hash: 5190c0043d6eb9ecdaefc1f5ba8c3a51cd4ec830e01e9f8dc3306e39275a0565
+            outcomeId: fb929254-6627-4328-85a0-135f8349048d
         reconciliations: []
         ref: comet-archive
         requiredCapabilities: []
         retry: manual
         runId: websession-test-isolation
-        status: pending
+        status: succeeded
         stepId: hotfix.archive.deliver
         type: invoke_skill
     actionContexts:
@@ -1780,6 +1801,12 @@ run_checkpoint:
                   支持注入 WebSession（缺省 .shared），VerificationWebTests 使用独立会话；归档
                   test-isolation 规格、验证报告与 2 个改动文件，提交到 main。
                 targetBranch: main
+      hotfix.archive.deliver:
+        sequence: 14
+        value:
+          action: local
+          commit: b8bb2643642ac9c644bee14e7659c9e5fc53405c
+          targetBranch: main
       hotfix.archive.execute:
         sequence: 13
         value:
@@ -1884,6 +1911,6 @@ run_checkpoint:
           verificationReport: docs/superpowers/reports/websession-test-isolation.md
     children: []
     lineage: []
-  sourceRevision: 22
-  sourceHash: c5ea1efb885ab7a04243ee0c06d9350b6ba8375239985d732b1edef6305d81c6
+  sourceRevision: 24
+  sourceHash: 8235c3c7b238ff1e2ddbe99332944dd1f3c42a10aafa22b26d29fcacb3d482ff
 check_epoch: 5
