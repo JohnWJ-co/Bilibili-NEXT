@@ -45,17 +45,20 @@ extension OfficialChallengeWeb: UIViewRepresentable {
 @MainActor final class OfficialChallengeCoordinator: NSObject, WKScriptMessageHandler, WKNavigationDelegate {
   let api: API
   let challenge: InteractionChallenge
+  let webSession: WebSession
   let completed: () -> Void
   @Binding var error: String?
   var task: Task<Void, Never>?
   var active = true
   var accepted = false
-  init(api: API, challenge: InteractionChallenge, completed: @escaping () -> Void, error: Binding<String?>) {
-    self.api = api; self.challenge = challenge; self.completed = completed; _error = error
+  init(api: API, challenge: InteractionChallenge, webSession: WebSession? = nil,
+       completed: @escaping () -> Void, error: Binding<String?>) {
+    self.api = api; self.challenge = challenge; self.webSession = webSession ?? .shared
+    self.completed = completed; _error = error
   }
   func makeView() -> WKWebView {
     let configuration = WKWebViewConfiguration()
-    configuration.websiteDataStore = WebSession.shared.dataStore
+    configuration.websiteDataStore = webSession.dataStore
     configuration.mediaTypesRequiringUserActionForPlayback = .all
     configuration.userContentController.add(self, name: "officialVerification")
     let view = WKWebView(frame: .zero, configuration: configuration)
@@ -63,7 +66,7 @@ extension OfficialChallengeWeb: UIViewRepresentable {
     view.navigationDelegate = self
     task = Task { @MainActor [weak self, weak view] in
       guard let self, let view else { return }
-      await WebSession.shared.prepare(api: api)
+      await webSession.prepare(api: api)
       guard !Task.isCancelled, active, api.authenticationGeneration == challenge.authentication else { return }
       view.loadHTMLString(Self.html, baseURL: URL(string: "https://www.bilibili.com/"))
     }

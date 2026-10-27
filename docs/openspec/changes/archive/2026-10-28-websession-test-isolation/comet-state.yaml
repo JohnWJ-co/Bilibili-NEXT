@@ -1,0 +1,1889 @@
+# comet-execution: managed-run
+change_id: 319bf104-33a5-44a0-b149-342022f1206e
+workflow: hotfix
+language: zh-CN
+phase: archive
+context_compression: off
+build_mode: direct
+build_pause: null
+subagent_dispatch: null
+tdd_mode: direct
+review_mode: off
+isolation: current
+verify_mode: light
+auto_transition: true
+base_ref: 68c8c3abea9de0ae4084c1964a3fd981ba66b3c7
+design_doc: null
+plan: null
+verify_result: pass
+verify_failures: 0
+verification_report: docs/superpowers/reports/websession-test-isolation.md
+branch_status: pending
+created_at: 2026-10-27
+verified_at: 2026-10-27
+archive_confirmation: confirmed
+archived: true
+bound_branch: main
+direct_override: null
+handoff_context: null
+handoff_hash: null
+classic_profile: null
+classic_migration: null
+run_checkpoint:
+  schema: comet.workflow-run-checkpoint.v1
+  hash: 281adaaed498089c7d7d2b5fada06207e61f00cdc4117389bbcb7abd96b30414
+  run:
+    protocolVersion: 1
+    schemaVersion: 1
+    runId: websession-test-isolation
+    revision: 1
+    workflow:
+      id: comet-classic-hotfix
+      version: "1"
+      hash: 59c8440e5c03ef56376797cfb0bc38e82bb8dc8d5cfb7a7351795f7a73fefbe8
+    definitionHashes:
+      '["comet-classic-hotfix","1"]': 59c8440e5c03ef56376797cfb0bc38e82bb8dc8d5cfb7a7351795f7a73fefbe8
+    initialStateHash: 6438f5a5ac5bbbb9c3c58cee0520471c33ec814c84728d2b0892b168d2b48d10
+    input:
+      change: websession-test-isolation
+      changeDir: docs/openspec/changes/websession-test-isolation
+    state:
+      archiveConfirmation: confirmed
+      archived: true
+      autoTransition: true
+      baseRef: 68c8c3abea9de0ae4084c1964a3fd981ba66b3c7
+      boundBranch: main
+      branchStatus: pending
+      buildMode: direct
+      buildPause: null
+      checkEpoch: 5
+      classicMigration: null
+      classicProfile: null
+      contextCompression: off
+      createdAt: 2026-10-27
+      designDoc: null
+      directOverride: null
+      handoffContext: null
+      handoffHash: null
+      isolation: current
+      language: zh-CN
+      phase: archive
+      plan: null
+      reviewMode: off
+      subagentDispatch: null
+      tddMode: direct
+      verificationReport: docs/superpowers/reports/websession-test-isolation.md
+      verifiedAt: 2026-10-27
+      verifyFailures: 0
+      verifyMode: light
+      verifyResult: pass
+      workflow: hotfix
+    status: running
+    sequence: 14
+    actions:
+      - attempt: 1
+        claim:
+          executorId: comet-classic-guard
+          token: portable-0887ea4269858668d763ffbd3d4443b790f2c3b12963c59ad997d92f94a06dd5
+        executionOrigin:
+          workflow:
+            hash: 59c8440e5c03ef56376797cfb0bc38e82bb8dc8d5cfb7a7351795f7a73fefbe8
+            id: comet-classic-hotfix
+            version: "1"
+        id: websession-test-isolation:1
+        input:
+          input:
+            change: websession-test-isolation
+            changeDir: docs/openspec/changes/websession-test-isolation
+          outputs: {}
+        inputHash: 2e9196d6266b87fabca7cd80e9cfac7c17f040035cec7567780621b4539e7304
+        outcome:
+          actionId: websession-test-isolation:1
+          attempt: 1
+          claimToken: portable-0887ea4269858668d763ffbd3d4443b790f2c3b12963c59ad997d92f94a06dd5
+          inputHash: 2e9196d6266b87fabca7cd80e9cfac7c17f040035cec7567780621b4539e7304
+          outcomeId: 1111453b-3316-4b3c-9251-47c63a1ddc86
+          output:
+            event: open-complete
+            requirementsEvidence:
+              contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+              ref: docs/openspec/changes/websession-test-isolation
+          status: succeeded
+        protocolVersion: 1
+        receipts:
+          - hash: 916af0f0acdd5e538955bedb7bd3f2f2a487a81e549e2922f9dc1fdf20fc3827
+            outcomeId: 1111453b-3316-4b3c-9251-47c63a1ddc86
+        reconciliations: []
+        ref: comet-hotfix
+        requiredCapabilities: []
+        retry: manual
+        runId: websession-test-isolation
+        status: succeeded
+        stepId: hotfix.open
+        type: invoke_skill
+      - attempt: 1
+        claim:
+          executorId: comet-classic-state
+          sessionId: classic-builder/websession-test-isolation:3/1
+          token: portable-7cc890a7e6810bb6bd81dd9d48f2e4de5455ab10b188dd85c6d7a2aeb74ff334
+        executionOrigin:
+          workflow:
+            hash: 59c8440e5c03ef56376797cfb0bc38e82bb8dc8d5cfb7a7351795f7a73fefbe8
+            id: comet-classic-hotfix
+            version: "1"
+        id: websession-test-isolation:3
+        input:
+          input:
+            change: websession-test-isolation
+            changeDir: docs/openspec/changes/websession-test-isolation
+          outputs:
+            hotfix.open:
+              event: open-complete
+              requirementsEvidence:
+                contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+                ref: docs/openspec/changes/websession-test-isolation
+            hotfix.open.evidence:
+              contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+              ref: docs/openspec/changes/websession-test-isolation
+        inputHash: c949ac5d7a00456d61d9d55308e73034f9af112a0dd56c27f6be802d715725af
+        outcome:
+          actionId: websession-test-isolation:3
+          attempt: 1
+          claimToken: portable-7cc890a7e6810bb6bd81dd9d48f2e4de5455ab10b188dd85c6d7a2aeb74ff334
+          inputHash: c949ac5d7a00456d61d9d55308e73034f9af112a0dd56c27f6be802d715725af
+          outcomeId: e48cc6e7-b391-4499-9689-c985dda030ac
+          output:
+            event: build-complete
+          status: succeeded
+        protocolVersion: 1
+        receipts:
+          - hash: f706348d05493f6d28f33606330472b886a7ab9341650ce3092fc1b3df741739
+            outcomeId: e48cc6e7-b391-4499-9689-c985dda030ac
+        reconciliations: []
+        ref: comet-build
+        requiredCapabilities: []
+        retry: manual
+        runId: websession-test-isolation
+        status: succeeded
+        stepId: hotfix.build.execute
+        type: invoke_skill
+      - attempt: 1
+        claim:
+          executorId: comet-classic-check
+          token: portable-2949e528e1b40ba902f5d0c42bb4840b4f02caad52ab686db849e9810bdbd3a8
+        executionOrigin:
+          workflow:
+            hash: 59c8440e5c03ef56376797cfb0bc38e82bb8dc8d5cfb7a7351795f7a73fefbe8
+            id: comet-classic-hotfix
+            version: "1"
+        id: websession-test-isolation:4
+        input:
+          input:
+            change: websession-test-isolation
+            changeDir: docs/openspec/changes/websession-test-isolation
+          outputs:
+            hotfix.build.execute:
+              event: build-complete
+            hotfix.open:
+              event: open-complete
+              requirementsEvidence:
+                contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+                ref: docs/openspec/changes/websession-test-isolation
+            hotfix.open.evidence:
+              contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+              ref: docs/openspec/changes/websession-test-isolation
+        inputHash: 22e900cfe7b36f57ade18efb78cfe9270d702211181d4c3caca9dd5f38eba3e6
+        outcome:
+          actionId: websession-test-isolation:4
+          attempt: 1
+          claimToken: portable-2949e528e1b40ba902f5d0c42bb4840b4f02caad52ab686db849e9810bdbd3a8
+          inputHash: 22e900cfe7b36f57ade18efb78cfe9270d702211181d4c3caca9dd5f38eba3e6
+          outcomeId: f9b02472-07e3-40bf-bc9e-70f3a5b19dc0
+          output:
+            argv:
+              - swift
+              - test
+            changedDuringExecution: []
+            checkEpoch: 1
+            contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+            cwd: .
+            environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+            exitCode: 0
+            inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+            inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+            manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+            manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+            receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+            reusable: true
+            reused: false
+            scope: build
+            tier: full
+            timeoutMs: 300000
+          status: succeeded
+        protocolVersion: 1
+        receipts:
+          - hash: 5364750141e7a7d532b86dfe1c14f7c6a8fca7447451fdd1fdf58d060e211252
+            outcomeId: f9b02472-07e3-40bf-bc9e-70f3a5b19dc0
+        reconciliations: []
+        ref: classic-check
+        requiredCapabilities: []
+        retry: manual
+        runId: websession-test-isolation
+        status: succeeded
+        stepId: hotfix.build.check
+        type: call_tool
+      - attempt: 1
+        claim:
+          executorId: comet-classic-guard
+          token: portable-5d664976e505802b6b64166d38b6a975ce2e4da1326151faae7263b5fa292e3f
+        executionOrigin:
+          workflow:
+            hash: 59c8440e5c03ef56376797cfb0bc38e82bb8dc8d5cfb7a7351795f7a73fefbe8
+            id: comet-classic-hotfix
+            version: "1"
+        id: websession-test-isolation:6
+        input:
+          input:
+            change: websession-test-isolation
+            changeDir: docs/openspec/changes/websession-test-isolation
+          outputs:
+            hotfix.build.check:
+              argv:
+                - swift
+                - test
+              changedDuringExecution: []
+              checkEpoch: 1
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              cwd: .
+              environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+              exitCode: 0
+              inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+              manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+              receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+              reusable: true
+              reused: false
+              scope: build
+              tier: full
+              timeoutMs: 300000
+            hotfix.build.check.evidence:
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+            hotfix.build.execute:
+              event: build-complete
+            hotfix.open:
+              event: open-complete
+              requirementsEvidence:
+                contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+                ref: docs/openspec/changes/websession-test-isolation
+            hotfix.open.evidence:
+              contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+              ref: docs/openspec/changes/websession-test-isolation
+        inputHash: a27dcfb9ea986fec1c1126cf54eb903907596c1973086de75118ef82f3710daa
+        outcome:
+          actionId: websession-test-isolation:6
+          attempt: 1
+          claimToken: portable-5d664976e505802b6b64166d38b6a975ce2e4da1326151faae7263b5fa292e3f
+          inputHash: a27dcfb9ea986fec1c1126cf54eb903907596c1973086de75118ef82f3710daa
+          outcomeId: b9fde38f-0626-4ae3-a30a-faf4eb257031
+          output:
+            event: verification-ready
+            verificationReport: docs/superpowers/reports/websession-test-isolation.md
+          status: succeeded
+        protocolVersion: 1
+        receipts:
+          - hash: 1b4c76de554349c3a17ee030dbae7a5d3a4584b3cc32a9b51b088a7239df53fc
+            outcomeId: b9fde38f-0626-4ae3-a30a-faf4eb257031
+        reconciliations: []
+        ref: comet-verify
+        requiredCapabilities: []
+        retry: manual
+        runId: websession-test-isolation
+        status: succeeded
+        stepId: hotfix.verify.run
+        type: invoke_skill
+      - attempt: 1
+        claim:
+          executorId: comet-classic-check
+          token: portable-d7dd3a32ff4b3430c32e50e45e4839055bd7062d00addda23837697c7d132411
+        executionOrigin:
+          workflow:
+            hash: 59c8440e5c03ef56376797cfb0bc38e82bb8dc8d5cfb7a7351795f7a73fefbe8
+            id: comet-classic-hotfix
+            version: "1"
+        id: websession-test-isolation:8
+        input:
+          input:
+            change: websession-test-isolation
+            changeDir: docs/openspec/changes/websession-test-isolation
+          outputs:
+            hotfix.build.check:
+              argv:
+                - swift
+                - test
+              changedDuringExecution: []
+              checkEpoch: 1
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              cwd: .
+              environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+              exitCode: 0
+              inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+              manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+              receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+              reusable: true
+              reused: false
+              scope: build
+              tier: full
+              timeoutMs: 300000
+            hotfix.build.check.evidence:
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+            hotfix.build.execute:
+              event: build-complete
+            hotfix.open:
+              event: open-complete
+              requirementsEvidence:
+                contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+                ref: docs/openspec/changes/websession-test-isolation
+            hotfix.open.evidence:
+              contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+              ref: docs/openspec/changes/websession-test-isolation
+            hotfix.verify.report.evidence:
+              contentHash: 7cc7cc00041c3ca0d21911c289abe95e68dd6827a9b2dc42b9a0084e7d52ed6b
+              ref: docs/superpowers/reports/websession-test-isolation.md
+            hotfix.verify.run:
+              event: verification-ready
+              verificationReport: docs/superpowers/reports/websession-test-isolation.md
+        inputHash: f7df8d845e4f1f5c21377a169ebf9ffd1c9a0548b469fb9204499bac3728cc98
+        outcome:
+          actionId: websession-test-isolation:8
+          attempt: 1
+          claimToken: portable-d7dd3a32ff4b3430c32e50e45e4839055bd7062d00addda23837697c7d132411
+          inputHash: f7df8d845e4f1f5c21377a169ebf9ffd1c9a0548b469fb9204499bac3728cc98
+          outcomeId: 8fbce60c-a826-4d34-9702-dd39e2caf0aa
+          output:
+            argv:
+              - swift
+              - test
+            changedDuringExecution: []
+            checkEpoch: 2
+            contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+            cwd: .
+            deliveryInputs:
+              Sources/BiliGlass/OfficialChallenge.swift: git:7dd93ec5d84a4a2221bd3512e4aecd53e86f5450
+              Tests/BiliGlassTests/VerificationWebTests.swift: git:3ccbed5083a234ba636f8bb5390c3e857f7c6e90
+            environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+            exitCode: 0
+            inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+            inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+            manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+            manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+            receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+            reusable: true
+            reused: true
+            reusedFrom: websession-test-isolation:4
+            scope: verify
+            tier: full
+            timeoutMs: 300000
+          status: succeeded
+        protocolVersion: 1
+        receipts:
+          - hash: 6fa5c425a0242356f210495df94e4e7d21fd5a5b620795a5be1c57a834b5cfee
+            outcomeId: 8fbce60c-a826-4d34-9702-dd39e2caf0aa
+        reconciliations: []
+        ref: classic-check
+        requiredCapabilities: []
+        retry: manual
+        runId: websession-test-isolation
+        status: succeeded
+        stepId: hotfix.verify.check
+        type: call_tool
+      - attempt: 1
+        claim:
+          executorId: comet-classic-state
+          token: portable-6062343914d9c9cc1676083428b7574156f55c832be4ef74cb19ba836c2e5ba9
+        executionOrigin:
+          workflow:
+            hash: 59c8440e5c03ef56376797cfb0bc38e82bb8dc8d5cfb7a7351795f7a73fefbe8
+            id: comet-classic-hotfix
+            version: "1"
+        id: websession-test-isolation:10
+        input:
+          input:
+            change: websession-test-isolation
+            changeDir: docs/openspec/changes/websession-test-isolation
+          outputs:
+            hotfix.build.check:
+              argv:
+                - swift
+                - test
+              changedDuringExecution: []
+              checkEpoch: 1
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              cwd: .
+              environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+              exitCode: 0
+              inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+              manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+              receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+              reusable: true
+              reused: false
+              scope: build
+              tier: full
+              timeoutMs: 300000
+            hotfix.build.check.evidence:
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+            hotfix.build.execute:
+              event: build-complete
+            hotfix.open:
+              event: open-complete
+              requirementsEvidence:
+                contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+                ref: docs/openspec/changes/websession-test-isolation
+            hotfix.open.evidence:
+              contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+              ref: docs/openspec/changes/websession-test-isolation
+            hotfix.verify.check:
+              argv:
+                - swift
+                - test
+              changedDuringExecution: []
+              checkEpoch: 2
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              cwd: .
+              deliveryInputs:
+                Sources/BiliGlass/OfficialChallenge.swift: git:7dd93ec5d84a4a2221bd3512e4aecd53e86f5450
+                Tests/BiliGlassTests/VerificationWebTests.swift: git:3ccbed5083a234ba636f8bb5390c3e857f7c6e90
+              environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+              exitCode: 0
+              inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+              manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+              receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+              reusable: true
+              reused: true
+              reusedFrom: websession-test-isolation:4
+              scope: verify
+              tier: full
+              timeoutMs: 300000
+            hotfix.verify.check.evidence:
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+            hotfix.verify.report.evidence:
+              contentHash: 7cc7cc00041c3ca0d21911c289abe95e68dd6827a9b2dc42b9a0084e7d52ed6b
+              ref: docs/superpowers/reports/websession-test-isolation.md
+            hotfix.verify.run:
+              event: verification-ready
+              verificationReport: docs/superpowers/reports/websession-test-isolation.md
+        inputHash: 1768fcc82d6dcb6bec155a4ac19a91d0b010d4b23a813070d6ee0e2f8d338c18
+        outcome:
+          actionId: websession-test-isolation:10
+          attempt: 1
+          claimToken: portable-6062343914d9c9cc1676083428b7574156f55c832be4ef74cb19ba836c2e5ba9
+          inputHash: 1768fcc82d6dcb6bec155a4ac19a91d0b010d4b23a813070d6ee0e2f8d338c18
+          outcomeId: ea9d2aff-8685-41f7-b0db-8ffe3c7851e8
+          output:
+            summary: 修复默认并行 swift test 的 WebSession.shared 竞态：OfficialChallengeCoordinator
+              支持注入 WebSession（缺省 .shared），VerificationWebTests 使用独立会话；归档
+              test-isolation 规格、验证报告与 2 个改动文件，提交到 main。
+            targetBranch: main
+          status: succeeded
+        protocolVersion: 1
+        receipts:
+          - hash: 6ebb390e8f5a429126d1f747a58b3bcd05de434f6dbf3f3fc3fb4839ec837b08
+            outcomeId: ea9d2aff-8685-41f7-b0db-8ffe3c7851e8
+        reconciliations: []
+        ref: comet-archive
+        requiredCapabilities: []
+        retry: manual
+        runId: websession-test-isolation
+        status: succeeded
+        stepId: hotfix.archive.prepare
+        type: invoke_skill
+      - attempt: 1
+        claim:
+          executorId: comet-classic-archive-preflight
+          token: portable-dce5d5bbde38a208b0f0acf47719205bc7ba85b335aec59145c860916e08bfaa
+        executionOrigin:
+          workflow:
+            hash: 59c8440e5c03ef56376797cfb0bc38e82bb8dc8d5cfb7a7351795f7a73fefbe8
+            id: comet-classic-hotfix
+            version: "1"
+        id: websession-test-isolation:12
+        input:
+          input:
+            change: websession-test-isolation
+            changeDir: docs/openspec/changes/websession-test-isolation
+          outputs:
+            hotfix.archive.confirm:
+              choice: local
+              proposal:
+                input:
+                  change: websession-test-isolation
+                  changeDir: docs/openspec/changes/websession-test-isolation
+                outputs:
+                  hotfix.archive.prepare:
+                    summary: 修复默认并行 swift test 的 WebSession.shared 竞态：OfficialChallengeCoordinator
+                      支持注入 WebSession（缺省 .shared），VerificationWebTests 使用独立会话；归档
+                      test-isolation 规格、验证报告与 2 个改动文件，提交到 main。
+                    targetBranch: main
+            hotfix.archive.prepare:
+              summary: 修复默认并行 swift test 的 WebSession.shared 竞态：OfficialChallengeCoordinator
+                支持注入 WebSession（缺省 .shared），VerificationWebTests 使用独立会话；归档
+                test-isolation 规格、验证报告与 2 个改动文件，提交到 main。
+              targetBranch: main
+            hotfix.build.check:
+              argv:
+                - swift
+                - test
+              changedDuringExecution: []
+              checkEpoch: 1
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              cwd: .
+              environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+              exitCode: 0
+              inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+              manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+              receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+              reusable: true
+              reused: false
+              scope: build
+              tier: full
+              timeoutMs: 300000
+            hotfix.build.check.evidence:
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+            hotfix.build.execute:
+              event: build-complete
+            hotfix.open:
+              event: open-complete
+              requirementsEvidence:
+                contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+                ref: docs/openspec/changes/websession-test-isolation
+            hotfix.open.evidence:
+              contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+              ref: docs/openspec/changes/websession-test-isolation
+            hotfix.verify.check:
+              argv:
+                - swift
+                - test
+              changedDuringExecution: []
+              checkEpoch: 2
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              cwd: .
+              deliveryInputs:
+                Sources/BiliGlass/OfficialChallenge.swift: git:7dd93ec5d84a4a2221bd3512e4aecd53e86f5450
+                Tests/BiliGlassTests/VerificationWebTests.swift: git:3ccbed5083a234ba636f8bb5390c3e857f7c6e90
+              environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+              exitCode: 0
+              inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+              manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+              receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+              reusable: true
+              reused: true
+              reusedFrom: websession-test-isolation:4
+              scope: verify
+              tier: full
+              timeoutMs: 300000
+            hotfix.verify.check.evidence:
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+            hotfix.verify.report.evidence:
+              contentHash: 7cc7cc00041c3ca0d21911c289abe95e68dd6827a9b2dc42b9a0084e7d52ed6b
+              ref: docs/superpowers/reports/websession-test-isolation.md
+            hotfix.verify.run:
+              event: verification-ready
+              verificationReport: docs/superpowers/reports/websession-test-isolation.md
+        inputHash: 3d4ccb9fd945012143fd81ab73d36befb3d5dd85f6d6e4299fa8163caeb2c8f2
+        outcome:
+          actionId: websession-test-isolation:12
+          attempt: 1
+          claimToken: portable-dce5d5bbde38a208b0f0acf47719205bc7ba85b335aec59145c860916e08bfaa
+          inputHash: 3d4ccb9fd945012143fd81ab73d36befb3d5dd85f6d6e4299fa8163caeb2c8f2
+          outcomeId: 8f718b6e-f03c-437d-9522-c19db9ea7cd3
+          output:
+            baseCommit: 68c8c3abea9de0ae4084c1964a3fd981ba66b3c7
+            deliveryAction: local
+            targetBranch: main
+            verifiedBranch: main
+          status: succeeded
+        protocolVersion: 1
+        receipts:
+          - hash: 6994c2f69993fe63eb0227b3e0740fccdf0e8f2f0844301f9522b8de496a20d1
+            outcomeId: 8f718b6e-f03c-437d-9522-c19db9ea7cd3
+        reconciliations: []
+        ref: classic-archive-preflight
+        requiredCapabilities: []
+        retry: manual
+        runId: websession-test-isolation
+        status: succeeded
+        stepId: hotfix.archive.preflight
+        type: call_tool
+      - attempt: 1
+        claim:
+          executorId: comet-classic-archive
+          token: portable-838236e7cdcf6fa60795c9d04fa4b0d97cff281af286336507fa1dcf82a2d5e7
+        executionOrigin:
+          workflow:
+            hash: 59c8440e5c03ef56376797cfb0bc38e82bb8dc8d5cfb7a7351795f7a73fefbe8
+            id: comet-classic-hotfix
+            version: "1"
+        id: websession-test-isolation:13
+        input:
+          input:
+            change: websession-test-isolation
+            changeDir: docs/openspec/changes/websession-test-isolation
+          outputs:
+            hotfix.archive.confirm:
+              choice: local
+              proposal:
+                input:
+                  change: websession-test-isolation
+                  changeDir: docs/openspec/changes/websession-test-isolation
+                outputs:
+                  hotfix.archive.prepare:
+                    summary: 修复默认并行 swift test 的 WebSession.shared 竞态：OfficialChallengeCoordinator
+                      支持注入 WebSession（缺省 .shared），VerificationWebTests 使用独立会话；归档
+                      test-isolation 规格、验证报告与 2 个改动文件，提交到 main。
+                    targetBranch: main
+            hotfix.archive.preflight:
+              baseCommit: 68c8c3abea9de0ae4084c1964a3fd981ba66b3c7
+              deliveryAction: local
+              targetBranch: main
+              verifiedBranch: main
+            hotfix.archive.prepare:
+              summary: 修复默认并行 swift test 的 WebSession.shared 竞态：OfficialChallengeCoordinator
+                支持注入 WebSession（缺省 .shared），VerificationWebTests 使用独立会话；归档
+                test-isolation 规格、验证报告与 2 个改动文件，提交到 main。
+              targetBranch: main
+            hotfix.build.check:
+              argv:
+                - swift
+                - test
+              changedDuringExecution: []
+              checkEpoch: 1
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              cwd: .
+              environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+              exitCode: 0
+              inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+              manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+              receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+              reusable: true
+              reused: false
+              scope: build
+              tier: full
+              timeoutMs: 300000
+            hotfix.build.check.evidence:
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+            hotfix.build.execute:
+              event: build-complete
+            hotfix.open:
+              event: open-complete
+              requirementsEvidence:
+                contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+                ref: docs/openspec/changes/websession-test-isolation
+            hotfix.open.evidence:
+              contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+              ref: docs/openspec/changes/websession-test-isolation
+            hotfix.verify.check:
+              argv:
+                - swift
+                - test
+              changedDuringExecution: []
+              checkEpoch: 2
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              cwd: .
+              deliveryInputs:
+                Sources/BiliGlass/OfficialChallenge.swift: git:7dd93ec5d84a4a2221bd3512e4aecd53e86f5450
+                Tests/BiliGlassTests/VerificationWebTests.swift: git:3ccbed5083a234ba636f8bb5390c3e857f7c6e90
+              environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+              exitCode: 0
+              inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+              manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+              receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+              reusable: true
+              reused: true
+              reusedFrom: websession-test-isolation:4
+              scope: verify
+              tier: full
+              timeoutMs: 300000
+            hotfix.verify.check.evidence:
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+            hotfix.verify.report.evidence:
+              contentHash: 7cc7cc00041c3ca0d21911c289abe95e68dd6827a9b2dc42b9a0084e7d52ed6b
+              ref: docs/superpowers/reports/websession-test-isolation.md
+            hotfix.verify.run:
+              event: verification-ready
+              verificationReport: docs/superpowers/reports/websession-test-isolation.md
+        inputHash: 55b81ef94f2799ca9953c129a387dd6b6bff497d3d268019d5105bc9a30253a3
+        outcome:
+          actionId: websession-test-isolation:13
+          attempt: 1
+          claimToken: portable-838236e7cdcf6fa60795c9d04fa4b0d97cff281af286336507fa1dcf82a2d5e7
+          inputHash: 55b81ef94f2799ca9953c129a387dd6b6bff497d3d268019d5105bc9a30253a3
+          outcomeId: b44f83f5-fbb4-4d71-9724-4c564d7f668c
+          output:
+            archiveDirectory: docs/openspec/changes/archive/2026-10-28-websession-test-isolation
+          status: succeeded
+        protocolVersion: 1
+        receipts:
+          - hash: 31c6d275764f43cccdbb13790a502c2d0575e444e12dbd62260e94a8a0e58f71
+            outcomeId: b44f83f5-fbb4-4d71-9724-4c564d7f668c
+        reconciliations: []
+        ref: classic-archive
+        requiredCapabilities: []
+        retry: manual
+        runId: websession-test-isolation
+        status: succeeded
+        stepId: hotfix.archive.execute
+        type: call_tool
+      - attempt: 1
+        id: websession-test-isolation:14
+        input:
+          input:
+            change: websession-test-isolation
+            changeDir: docs/openspec/changes/websession-test-isolation
+          outputs:
+            hotfix.archive.confirm:
+              choice: local
+              proposal:
+                input:
+                  change: websession-test-isolation
+                  changeDir: docs/openspec/changes/websession-test-isolation
+                outputs:
+                  hotfix.archive.prepare:
+                    summary: 修复默认并行 swift test 的 WebSession.shared 竞态：OfficialChallengeCoordinator
+                      支持注入 WebSession（缺省 .shared），VerificationWebTests 使用独立会话；归档
+                      test-isolation 规格、验证报告与 2 个改动文件，提交到 main。
+                    targetBranch: main
+            hotfix.archive.execute:
+              archiveDirectory: docs/openspec/changes/archive/2026-10-28-websession-test-isolation
+            hotfix.archive.preflight:
+              baseCommit: 68c8c3abea9de0ae4084c1964a3fd981ba66b3c7
+              deliveryAction: local
+              targetBranch: main
+              verifiedBranch: main
+            hotfix.archive.prepare:
+              summary: 修复默认并行 swift test 的 WebSession.shared 竞态：OfficialChallengeCoordinator
+                支持注入 WebSession（缺省 .shared），VerificationWebTests 使用独立会话；归档
+                test-isolation 规格、验证报告与 2 个改动文件，提交到 main。
+              targetBranch: main
+            hotfix.build.check:
+              argv:
+                - swift
+                - test
+              changedDuringExecution: []
+              checkEpoch: 1
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              cwd: .
+              environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+              exitCode: 0
+              inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+              manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+              receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+              reusable: true
+              reused: false
+              scope: build
+              tier: full
+              timeoutMs: 300000
+            hotfix.build.check.evidence:
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+            hotfix.build.execute:
+              event: build-complete
+            hotfix.open:
+              event: open-complete
+              requirementsEvidence:
+                contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+                ref: docs/openspec/changes/websession-test-isolation
+            hotfix.open.evidence:
+              contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+              ref: docs/openspec/changes/websession-test-isolation
+            hotfix.verify.check:
+              argv:
+                - swift
+                - test
+              changedDuringExecution: []
+              checkEpoch: 2
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              cwd: .
+              deliveryInputs:
+                Sources/BiliGlass/OfficialChallenge.swift: git:7dd93ec5d84a4a2221bd3512e4aecd53e86f5450
+                Tests/BiliGlassTests/VerificationWebTests.swift: git:3ccbed5083a234ba636f8bb5390c3e857f7c6e90
+              environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+              exitCode: 0
+              inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+              manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+              receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+              reusable: true
+              reused: true
+              reusedFrom: websession-test-isolation:4
+              scope: verify
+              tier: full
+              timeoutMs: 300000
+            hotfix.verify.check.evidence:
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+            hotfix.verify.report.evidence:
+              contentHash: 7cc7cc00041c3ca0d21911c289abe95e68dd6827a9b2dc42b9a0084e7d52ed6b
+              ref: docs/superpowers/reports/websession-test-isolation.md
+            hotfix.verify.run:
+              event: verification-ready
+              verificationReport: docs/superpowers/reports/websession-test-isolation.md
+        inputHash: 42980a2760e963a1061fb65caf00822068c04eafa29e90672d4df6df70619d8e
+        protocolVersion: 1
+        receipts: []
+        reconciliations: []
+        ref: comet-archive
+        requiredCapabilities: []
+        retry: manual
+        runId: websession-test-isolation
+        status: pending
+        stepId: hotfix.archive.deliver
+        type: invoke_skill
+    actionContexts:
+      websession-test-isolation:1:
+        results: {}
+        sequence: 1
+      websession-test-isolation:10:
+        results:
+          hotfix.build.check:
+            sequence: 4
+            value:
+              argv:
+                - swift
+                - test
+              changedDuringExecution: []
+              checkEpoch: 1
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              cwd: .
+              environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+              exitCode: 0
+              inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+              manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+              receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+              reusable: true
+              reused: false
+              scope: build
+              tier: full
+              timeoutMs: 300000
+          hotfix.build.check.evidence:
+            sequence: 5
+            value:
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+          hotfix.build.execute:
+            sequence: 3
+            value:
+              event: build-complete
+          hotfix.open:
+            sequence: 1
+            value:
+              event: open-complete
+              requirementsEvidence:
+                contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+                ref: docs/openspec/changes/websession-test-isolation
+          hotfix.open.evidence:
+            sequence: 2
+            value:
+              contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+              ref: docs/openspec/changes/websession-test-isolation
+          hotfix.verify.check:
+            sequence: 8
+            value:
+              argv:
+                - swift
+                - test
+              changedDuringExecution: []
+              checkEpoch: 2
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              cwd: .
+              deliveryInputs:
+                Sources/BiliGlass/OfficialChallenge.swift: git:7dd93ec5d84a4a2221bd3512e4aecd53e86f5450
+                Tests/BiliGlassTests/VerificationWebTests.swift: git:3ccbed5083a234ba636f8bb5390c3e857f7c6e90
+              environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+              exitCode: 0
+              inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+              manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+              receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+              reusable: true
+              reused: true
+              reusedFrom: websession-test-isolation:4
+              scope: verify
+              tier: full
+              timeoutMs: 300000
+          hotfix.verify.check.evidence:
+            sequence: 9
+            value:
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+          hotfix.verify.report.evidence:
+            sequence: 7
+            value:
+              contentHash: 7cc7cc00041c3ca0d21911c289abe95e68dd6827a9b2dc42b9a0084e7d52ed6b
+              ref: docs/superpowers/reports/websession-test-isolation.md
+          hotfix.verify.run:
+            sequence: 6
+            value:
+              event: verification-ready
+              verificationReport: docs/superpowers/reports/websession-test-isolation.md
+        sequence: 10
+      websession-test-isolation:12:
+        results:
+          hotfix.archive.confirm:
+            sequence: 11
+            value:
+              choice: local
+              proposal:
+                input:
+                  change: websession-test-isolation
+                  changeDir: docs/openspec/changes/websession-test-isolation
+                outputs:
+                  hotfix.archive.prepare:
+                    summary: 修复默认并行 swift test 的 WebSession.shared 竞态：OfficialChallengeCoordinator
+                      支持注入 WebSession（缺省 .shared），VerificationWebTests 使用独立会话；归档
+                      test-isolation 规格、验证报告与 2 个改动文件，提交到 main。
+                    targetBranch: main
+          hotfix.archive.prepare:
+            sequence: 10
+            value:
+              summary: 修复默认并行 swift test 的 WebSession.shared 竞态：OfficialChallengeCoordinator
+                支持注入 WebSession（缺省 .shared），VerificationWebTests 使用独立会话；归档
+                test-isolation 规格、验证报告与 2 个改动文件，提交到 main。
+              targetBranch: main
+          hotfix.build.check:
+            sequence: 4
+            value:
+              argv:
+                - swift
+                - test
+              changedDuringExecution: []
+              checkEpoch: 1
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              cwd: .
+              environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+              exitCode: 0
+              inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+              manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+              receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+              reusable: true
+              reused: false
+              scope: build
+              tier: full
+              timeoutMs: 300000
+          hotfix.build.check.evidence:
+            sequence: 5
+            value:
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+          hotfix.build.execute:
+            sequence: 3
+            value:
+              event: build-complete
+          hotfix.open:
+            sequence: 1
+            value:
+              event: open-complete
+              requirementsEvidence:
+                contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+                ref: docs/openspec/changes/websession-test-isolation
+          hotfix.open.evidence:
+            sequence: 2
+            value:
+              contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+              ref: docs/openspec/changes/websession-test-isolation
+          hotfix.verify.check:
+            sequence: 8
+            value:
+              argv:
+                - swift
+                - test
+              changedDuringExecution: []
+              checkEpoch: 2
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              cwd: .
+              deliveryInputs:
+                Sources/BiliGlass/OfficialChallenge.swift: git:7dd93ec5d84a4a2221bd3512e4aecd53e86f5450
+                Tests/BiliGlassTests/VerificationWebTests.swift: git:3ccbed5083a234ba636f8bb5390c3e857f7c6e90
+              environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+              exitCode: 0
+              inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+              manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+              receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+              reusable: true
+              reused: true
+              reusedFrom: websession-test-isolation:4
+              scope: verify
+              tier: full
+              timeoutMs: 300000
+          hotfix.verify.check.evidence:
+            sequence: 9
+            value:
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+          hotfix.verify.report.evidence:
+            sequence: 7
+            value:
+              contentHash: 7cc7cc00041c3ca0d21911c289abe95e68dd6827a9b2dc42b9a0084e7d52ed6b
+              ref: docs/superpowers/reports/websession-test-isolation.md
+          hotfix.verify.run:
+            sequence: 6
+            value:
+              event: verification-ready
+              verificationReport: docs/superpowers/reports/websession-test-isolation.md
+        sequence: 12
+      websession-test-isolation:13:
+        results:
+          hotfix.archive.confirm:
+            sequence: 11
+            value:
+              choice: local
+              proposal:
+                input:
+                  change: websession-test-isolation
+                  changeDir: docs/openspec/changes/websession-test-isolation
+                outputs:
+                  hotfix.archive.prepare:
+                    summary: 修复默认并行 swift test 的 WebSession.shared 竞态：OfficialChallengeCoordinator
+                      支持注入 WebSession（缺省 .shared），VerificationWebTests 使用独立会话；归档
+                      test-isolation 规格、验证报告与 2 个改动文件，提交到 main。
+                    targetBranch: main
+          hotfix.archive.preflight:
+            sequence: 12
+            value:
+              baseCommit: 68c8c3abea9de0ae4084c1964a3fd981ba66b3c7
+              deliveryAction: local
+              targetBranch: main
+              verifiedBranch: main
+          hotfix.archive.prepare:
+            sequence: 10
+            value:
+              summary: 修复默认并行 swift test 的 WebSession.shared 竞态：OfficialChallengeCoordinator
+                支持注入 WebSession（缺省 .shared），VerificationWebTests 使用独立会话；归档
+                test-isolation 规格、验证报告与 2 个改动文件，提交到 main。
+              targetBranch: main
+          hotfix.build.check:
+            sequence: 4
+            value:
+              argv:
+                - swift
+                - test
+              changedDuringExecution: []
+              checkEpoch: 1
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              cwd: .
+              environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+              exitCode: 0
+              inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+              manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+              receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+              reusable: true
+              reused: false
+              scope: build
+              tier: full
+              timeoutMs: 300000
+          hotfix.build.check.evidence:
+            sequence: 5
+            value:
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+          hotfix.build.execute:
+            sequence: 3
+            value:
+              event: build-complete
+          hotfix.open:
+            sequence: 1
+            value:
+              event: open-complete
+              requirementsEvidence:
+                contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+                ref: docs/openspec/changes/websession-test-isolation
+          hotfix.open.evidence:
+            sequence: 2
+            value:
+              contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+              ref: docs/openspec/changes/websession-test-isolation
+          hotfix.verify.check:
+            sequence: 8
+            value:
+              argv:
+                - swift
+                - test
+              changedDuringExecution: []
+              checkEpoch: 2
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              cwd: .
+              deliveryInputs:
+                Sources/BiliGlass/OfficialChallenge.swift: git:7dd93ec5d84a4a2221bd3512e4aecd53e86f5450
+                Tests/BiliGlassTests/VerificationWebTests.swift: git:3ccbed5083a234ba636f8bb5390c3e857f7c6e90
+              environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+              exitCode: 0
+              inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+              manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+              receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+              reusable: true
+              reused: true
+              reusedFrom: websession-test-isolation:4
+              scope: verify
+              tier: full
+              timeoutMs: 300000
+          hotfix.verify.check.evidence:
+            sequence: 9
+            value:
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+          hotfix.verify.report.evidence:
+            sequence: 7
+            value:
+              contentHash: 7cc7cc00041c3ca0d21911c289abe95e68dd6827a9b2dc42b9a0084e7d52ed6b
+              ref: docs/superpowers/reports/websession-test-isolation.md
+          hotfix.verify.run:
+            sequence: 6
+            value:
+              event: verification-ready
+              verificationReport: docs/superpowers/reports/websession-test-isolation.md
+        sequence: 13
+      websession-test-isolation:14:
+        results:
+          hotfix.archive.confirm:
+            sequence: 11
+            value:
+              choice: local
+              proposal:
+                input:
+                  change: websession-test-isolation
+                  changeDir: docs/openspec/changes/websession-test-isolation
+                outputs:
+                  hotfix.archive.prepare:
+                    summary: 修复默认并行 swift test 的 WebSession.shared 竞态：OfficialChallengeCoordinator
+                      支持注入 WebSession（缺省 .shared），VerificationWebTests 使用独立会话；归档
+                      test-isolation 规格、验证报告与 2 个改动文件，提交到 main。
+                    targetBranch: main
+          hotfix.archive.execute:
+            sequence: 13
+            value:
+              archiveDirectory: docs/openspec/changes/archive/2026-10-28-websession-test-isolation
+          hotfix.archive.preflight:
+            sequence: 12
+            value:
+              baseCommit: 68c8c3abea9de0ae4084c1964a3fd981ba66b3c7
+              deliveryAction: local
+              targetBranch: main
+              verifiedBranch: main
+          hotfix.archive.prepare:
+            sequence: 10
+            value:
+              summary: 修复默认并行 swift test 的 WebSession.shared 竞态：OfficialChallengeCoordinator
+                支持注入 WebSession（缺省 .shared），VerificationWebTests 使用独立会话；归档
+                test-isolation 规格、验证报告与 2 个改动文件，提交到 main。
+              targetBranch: main
+          hotfix.build.check:
+            sequence: 4
+            value:
+              argv:
+                - swift
+                - test
+              changedDuringExecution: []
+              checkEpoch: 1
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              cwd: .
+              environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+              exitCode: 0
+              inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+              manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+              receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+              reusable: true
+              reused: false
+              scope: build
+              tier: full
+              timeoutMs: 300000
+          hotfix.build.check.evidence:
+            sequence: 5
+            value:
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+          hotfix.build.execute:
+            sequence: 3
+            value:
+              event: build-complete
+          hotfix.open:
+            sequence: 1
+            value:
+              event: open-complete
+              requirementsEvidence:
+                contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+                ref: docs/openspec/changes/websession-test-isolation
+          hotfix.open.evidence:
+            sequence: 2
+            value:
+              contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+              ref: docs/openspec/changes/websession-test-isolation
+          hotfix.verify.check:
+            sequence: 8
+            value:
+              argv:
+                - swift
+                - test
+              changedDuringExecution: []
+              checkEpoch: 2
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              cwd: .
+              deliveryInputs:
+                Sources/BiliGlass/OfficialChallenge.swift: git:7dd93ec5d84a4a2221bd3512e4aecd53e86f5450
+                Tests/BiliGlassTests/VerificationWebTests.swift: git:3ccbed5083a234ba636f8bb5390c3e857f7c6e90
+              environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+              exitCode: 0
+              inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+              manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+              receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+              reusable: true
+              reused: true
+              reusedFrom: websession-test-isolation:4
+              scope: verify
+              tier: full
+              timeoutMs: 300000
+          hotfix.verify.check.evidence:
+            sequence: 9
+            value:
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+          hotfix.verify.report.evidence:
+            sequence: 7
+            value:
+              contentHash: 7cc7cc00041c3ca0d21911c289abe95e68dd6827a9b2dc42b9a0084e7d52ed6b
+              ref: docs/superpowers/reports/websession-test-isolation.md
+          hotfix.verify.run:
+            sequence: 6
+            value:
+              event: verification-ready
+              verificationReport: docs/superpowers/reports/websession-test-isolation.md
+        sequence: 14
+      websession-test-isolation:3:
+        results:
+          hotfix.open:
+            sequence: 1
+            value:
+              event: open-complete
+              requirementsEvidence:
+                contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+                ref: docs/openspec/changes/websession-test-isolation
+          hotfix.open.evidence:
+            sequence: 2
+            value:
+              contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+              ref: docs/openspec/changes/websession-test-isolation
+        sequence: 3
+      websession-test-isolation:4:
+        results:
+          hotfix.build.execute:
+            sequence: 3
+            value:
+              event: build-complete
+          hotfix.open:
+            sequence: 1
+            value:
+              event: open-complete
+              requirementsEvidence:
+                contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+                ref: docs/openspec/changes/websession-test-isolation
+          hotfix.open.evidence:
+            sequence: 2
+            value:
+              contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+              ref: docs/openspec/changes/websession-test-isolation
+        sequence: 4
+      websession-test-isolation:6:
+        results:
+          hotfix.build.check:
+            sequence: 4
+            value:
+              argv:
+                - swift
+                - test
+              changedDuringExecution: []
+              checkEpoch: 1
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              cwd: .
+              environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+              exitCode: 0
+              inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+              manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+              receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+              reusable: true
+              reused: false
+              scope: build
+              tier: full
+              timeoutMs: 300000
+          hotfix.build.check.evidence:
+            sequence: 5
+            value:
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+          hotfix.build.execute:
+            sequence: 3
+            value:
+              event: build-complete
+          hotfix.open:
+            sequence: 1
+            value:
+              event: open-complete
+              requirementsEvidence:
+                contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+                ref: docs/openspec/changes/websession-test-isolation
+          hotfix.open.evidence:
+            sequence: 2
+            value:
+              contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+              ref: docs/openspec/changes/websession-test-isolation
+        sequence: 6
+      websession-test-isolation:8:
+        results:
+          hotfix.build.check:
+            sequence: 4
+            value:
+              argv:
+                - swift
+                - test
+              changedDuringExecution: []
+              checkEpoch: 1
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              cwd: .
+              environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+              exitCode: 0
+              inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+              manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+              receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+              reusable: true
+              reused: false
+              scope: build
+              tier: full
+              timeoutMs: 300000
+          hotfix.build.check.evidence:
+            sequence: 5
+            value:
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+          hotfix.build.execute:
+            sequence: 3
+            value:
+              event: build-complete
+          hotfix.open:
+            sequence: 1
+            value:
+              event: open-complete
+              requirementsEvidence:
+                contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+                ref: docs/openspec/changes/websession-test-isolation
+          hotfix.open.evidence:
+            sequence: 2
+            value:
+              contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+              ref: docs/openspec/changes/websession-test-isolation
+          hotfix.verify.report.evidence:
+            sequence: 7
+            value:
+              contentHash: 7cc7cc00041c3ca0d21911c289abe95e68dd6827a9b2dc42b9a0084e7d52ed6b
+              ref: docs/superpowers/reports/websession-test-isolation.md
+          hotfix.verify.run:
+            sequence: 6
+            value:
+              event: verification-ready
+              verificationReport: docs/superpowers/reports/websession-test-isolation.md
+        sequence: 8
+    waits:
+      - id: websession-test-isolation:11
+        stepId: hotfix.archive.confirm
+        sequence: 11
+        status: resolved
+        proposal:
+          input:
+            change: websession-test-isolation
+            changeDir: docs/openspec/changes/websession-test-isolation
+          outputs:
+            hotfix.archive.prepare:
+              summary: 修复默认并行 swift test 的 WebSession.shared 竞态：OfficialChallengeCoordinator
+                支持注入 WebSession（缺省 .shared），VerificationWebTests 使用独立会话；归档
+                test-isolation 规格、验证报告与 2 个改动文件，提交到 main。
+              targetBranch: main
+        proposalHash: 2d9994e7e863eed708f520e06e71c6dfd4a8da14c5872744b6691bd3d79be8b5
+        choices:
+          - local
+          - push
+          - pr
+          - reverify
+          - later
+        results:
+          hotfix.archive.prepare:
+            sequence: 10
+            value:
+              summary: 修复默认并行 swift test 的 WebSession.shared 竞态：OfficialChallengeCoordinator
+                支持注入 WebSession（缺省 .shared），VerificationWebTests 使用独立会话；归档
+                test-isolation 规格、验证报告与 2 个改动文件，提交到 main。
+              targetBranch: main
+          hotfix.build.check:
+            sequence: 4
+            value:
+              argv:
+                - swift
+                - test
+              changedDuringExecution: []
+              checkEpoch: 1
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              cwd: .
+              environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+              exitCode: 0
+              inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+              manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+              receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+              reusable: true
+              reused: false
+              scope: build
+              tier: full
+              timeoutMs: 300000
+          hotfix.build.check.evidence:
+            sequence: 5
+            value:
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+          hotfix.build.execute:
+            sequence: 3
+            value:
+              event: build-complete
+          hotfix.open:
+            sequence: 1
+            value:
+              event: open-complete
+              requirementsEvidence:
+                contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+                ref: docs/openspec/changes/websession-test-isolation
+          hotfix.open.evidence:
+            sequence: 2
+            value:
+              contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+              ref: docs/openspec/changes/websession-test-isolation
+          hotfix.verify.check:
+            sequence: 8
+            value:
+              argv:
+                - swift
+                - test
+              changedDuringExecution: []
+              checkEpoch: 2
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              cwd: .
+              deliveryInputs:
+                Sources/BiliGlass/OfficialChallenge.swift: git:7dd93ec5d84a4a2221bd3512e4aecd53e86f5450
+                Tests/BiliGlassTests/VerificationWebTests.swift: git:3ccbed5083a234ba636f8bb5390c3e857f7c6e90
+              environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+              exitCode: 0
+              inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+              manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+              receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+              reusable: true
+              reused: true
+              reusedFrom: websession-test-isolation:4
+              scope: verify
+              tier: full
+              timeoutMs: 300000
+          hotfix.verify.check.evidence:
+            sequence: 9
+            value:
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+          hotfix.verify.report.evidence:
+            sequence: 7
+            value:
+              contentHash: 7cc7cc00041c3ca0d21911c289abe95e68dd6827a9b2dc42b9a0084e7d52ed6b
+              ref: docs/superpowers/reports/websession-test-isolation.md
+          hotfix.verify.run:
+            sequence: 6
+            value:
+              event: verification-ready
+              verificationReport: docs/superpowers/reports/websession-test-isolation.md
+        decision:
+          id: classic-archive-2d9994e7e863eed708f520e06e71c6dfd4a8da14c5872744b6691bd3d79be8b5-local
+          choice: local
+          proposalHash: 2d9994e7e863eed708f520e06e71c6dfd4a8da14c5872744b6691bd3d79be8b5
+    evidenceWaits:
+      - id: websession-test-isolation:2
+        stepId: hotfix.open.evidence
+        sequence: 2
+        kind: classic-open-artifacts
+        status: resolved
+        results:
+          hotfix.open:
+            sequence: 1
+            value:
+              event: open-complete
+              requirementsEvidence:
+                contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+                ref: docs/openspec/changes/websession-test-isolation
+        receipt:
+          ref: docs/openspec/changes/websession-test-isolation
+          contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+          submissionId: f8f99b87-bef3-43a5-86fe-56a003f78e85
+      - id: websession-test-isolation:5
+        stepId: hotfix.build.check.evidence
+        sequence: 5
+        kind: classic-build-check
+        status: resolved
+        results:
+          hotfix.build.check:
+            sequence: 4
+            value:
+              argv:
+                - swift
+                - test
+              changedDuringExecution: []
+              checkEpoch: 1
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              cwd: .
+              environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+              exitCode: 0
+              inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+              manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+              receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+              reusable: true
+              reused: false
+              scope: build
+              tier: full
+              timeoutMs: 300000
+          hotfix.build.execute:
+            sequence: 3
+            value:
+              event: build-complete
+          hotfix.open:
+            sequence: 1
+            value:
+              event: open-complete
+              requirementsEvidence:
+                contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+                ref: docs/openspec/changes/websession-test-isolation
+          hotfix.open.evidence:
+            sequence: 2
+            value:
+              contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+              ref: docs/openspec/changes/websession-test-isolation
+        receipt:
+          ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+          contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+          submissionId: 2c266960-7d6c-439f-926c-80f57c354eca
+      - id: websession-test-isolation:7
+        stepId: hotfix.verify.report.evidence
+        sequence: 7
+        kind: classic-verification-report
+        status: resolved
+        results:
+          hotfix.build.check:
+            sequence: 4
+            value:
+              argv:
+                - swift
+                - test
+              changedDuringExecution: []
+              checkEpoch: 1
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              cwd: .
+              environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+              exitCode: 0
+              inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+              manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+              receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+              reusable: true
+              reused: false
+              scope: build
+              tier: full
+              timeoutMs: 300000
+          hotfix.build.check.evidence:
+            sequence: 5
+            value:
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+          hotfix.build.execute:
+            sequence: 3
+            value:
+              event: build-complete
+          hotfix.open:
+            sequence: 1
+            value:
+              event: open-complete
+              requirementsEvidence:
+                contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+                ref: docs/openspec/changes/websession-test-isolation
+          hotfix.open.evidence:
+            sequence: 2
+            value:
+              contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+              ref: docs/openspec/changes/websession-test-isolation
+          hotfix.verify.run:
+            sequence: 6
+            value:
+              event: verification-ready
+              verificationReport: docs/superpowers/reports/websession-test-isolation.md
+        receipt:
+          ref: docs/superpowers/reports/websession-test-isolation.md
+          contentHash: 7cc7cc00041c3ca0d21911c289abe95e68dd6827a9b2dc42b9a0084e7d52ed6b
+          submissionId: bbe88cf6-b01c-4f30-a0ba-199128e72bd3
+      - id: websession-test-isolation:9
+        stepId: hotfix.verify.check.evidence
+        sequence: 9
+        kind: classic-verify-check
+        status: resolved
+        results:
+          hotfix.build.check:
+            sequence: 4
+            value:
+              argv:
+                - swift
+                - test
+              changedDuringExecution: []
+              checkEpoch: 1
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              cwd: .
+              environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+              exitCode: 0
+              inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+              manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+              receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+              reusable: true
+              reused: false
+              scope: build
+              tier: full
+              timeoutMs: 300000
+          hotfix.build.check.evidence:
+            sequence: 5
+            value:
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+          hotfix.build.execute:
+            sequence: 3
+            value:
+              event: build-complete
+          hotfix.open:
+            sequence: 1
+            value:
+              event: open-complete
+              requirementsEvidence:
+                contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+                ref: docs/openspec/changes/websession-test-isolation
+          hotfix.open.evidence:
+            sequence: 2
+            value:
+              contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+              ref: docs/openspec/changes/websession-test-isolation
+          hotfix.verify.check:
+            sequence: 8
+            value:
+              argv:
+                - swift
+                - test
+              changedDuringExecution: []
+              checkEpoch: 2
+              contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+              cwd: .
+              deliveryInputs:
+                Sources/BiliGlass/OfficialChallenge.swift: git:7dd93ec5d84a4a2221bd3512e4aecd53e86f5450
+                Tests/BiliGlassTests/VerificationWebTests.swift: git:3ccbed5083a234ba636f8bb5390c3e857f7c6e90
+              environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+              exitCode: 0
+              inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+              manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+              manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+              receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+              reusable: true
+              reused: true
+              reusedFrom: websession-test-isolation:4
+              scope: verify
+              tier: full
+              timeoutMs: 300000
+          hotfix.verify.report.evidence:
+            sequence: 7
+            value:
+              contentHash: 7cc7cc00041c3ca0d21911c289abe95e68dd6827a9b2dc42b9a0084e7d52ed6b
+              ref: docs/superpowers/reports/websession-test-isolation.md
+          hotfix.verify.run:
+            sequence: 6
+            value:
+              event: verification-ready
+              verificationReport: docs/superpowers/reports/websession-test-isolation.md
+        receipt:
+          ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+          contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+          submissionId: 64ca518e-99e5-477a-9493-b9ddb28d7686
+    ready: []
+    joins: {}
+    outputs:
+      hotfix.archive.confirm:
+        sequence: 11
+        value:
+          choice: local
+          proposal:
+            input:
+              change: websession-test-isolation
+              changeDir: docs/openspec/changes/websession-test-isolation
+            outputs:
+              hotfix.archive.prepare:
+                summary: 修复默认并行 swift test 的 WebSession.shared 竞态：OfficialChallengeCoordinator
+                  支持注入 WebSession（缺省 .shared），VerificationWebTests 使用独立会话；归档
+                  test-isolation 规格、验证报告与 2 个改动文件，提交到 main。
+                targetBranch: main
+      hotfix.archive.execute:
+        sequence: 13
+        value:
+          archiveDirectory: docs/openspec/changes/archive/2026-10-28-websession-test-isolation
+      hotfix.archive.preflight:
+        sequence: 12
+        value:
+          baseCommit: 68c8c3abea9de0ae4084c1964a3fd981ba66b3c7
+          deliveryAction: local
+          targetBranch: main
+          verifiedBranch: main
+      hotfix.archive.prepare:
+        sequence: 10
+        value:
+          summary: 修复默认并行 swift test 的 WebSession.shared 竞态：OfficialChallengeCoordinator
+            支持注入 WebSession（缺省 .shared），VerificationWebTests 使用独立会话；归档
+            test-isolation 规格、验证报告与 2 个改动文件，提交到 main。
+          targetBranch: main
+      hotfix.build.check:
+        sequence: 4
+        value:
+          argv:
+            - swift
+            - test
+          changedDuringExecution: []
+          checkEpoch: 1
+          contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+          cwd: .
+          environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+          exitCode: 0
+          inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+          inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+          manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+          manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+          receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+          reusable: true
+          reused: false
+          scope: build
+          tier: full
+          timeoutMs: 300000
+      hotfix.build.check.evidence:
+        sequence: 5
+        value:
+          contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+          ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+      hotfix.build.execute:
+        sequence: 3
+        value:
+          event: build-complete
+      hotfix.open:
+        sequence: 1
+        value:
+          event: open-complete
+          requirementsEvidence:
+            contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+            ref: docs/openspec/changes/websession-test-isolation
+      hotfix.open.evidence:
+        sequence: 2
+        value:
+          contentHash: 5a043148412023b0f909778cc33512d6a04a81ab71dc5d1e18505b79af82ac8d
+          ref: docs/openspec/changes/websession-test-isolation
+      hotfix.verify.check:
+        sequence: 8
+        value:
+          argv:
+            - swift
+            - test
+          changedDuringExecution: []
+          checkEpoch: 2
+          contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+          cwd: .
+          deliveryInputs:
+            Sources/BiliGlass/OfficialChallenge.swift: git:7dd93ec5d84a4a2221bd3512e4aecd53e86f5450
+            Tests/BiliGlassTests/VerificationWebTests.swift: git:3ccbed5083a234ba636f8bb5390c3e857f7c6e90
+          environment: 6dedf048ea2fdf994186126f9f7455fa08a8d4b75bf105fa147f385d23936e18
+          exitCode: 0
+          inputAfter: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+          inputBefore: 425120907a74878d81c46ece6fb2907edb84c8fdcb523b94428a333ded4686b9
+          manifestHash: a62e0c99ad846bbf47ec6ccbd500acea1c72a6f526eeec744b029929e17666b5
+          manifestRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/2b769edf-beb5-4133-bf02-4189fd279948.manifest
+          receiptRef: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+          reusable: true
+          reused: true
+          reusedFrom: websession-test-isolation:4
+          scope: verify
+          tier: full
+          timeoutMs: 300000
+      hotfix.verify.check.evidence:
+        sequence: 9
+        value:
+          contentHash: 8e52cb8aa6e6c5045b43b066add93910ef5632859b84cc881cd8b7ff34afd5b1
+          ref: .comet/runtime/classic-sdk-checks/1425a9885e2e89bb4a9aa3eb5199bc8f1c89a60fda7a7eaf17a8dc268520cf4d/32882682-27fb-47c6-85f4-8c515b66786f.log
+      hotfix.verify.report.evidence:
+        sequence: 7
+        value:
+          contentHash: 7cc7cc00041c3ca0d21911c289abe95e68dd6827a9b2dc42b9a0084e7d52ed6b
+          ref: docs/superpowers/reports/websession-test-isolation.md
+      hotfix.verify.run:
+        sequence: 6
+        value:
+          event: verification-ready
+          verificationReport: docs/superpowers/reports/websession-test-isolation.md
+    children: []
+    lineage: []
+  sourceRevision: 22
+  sourceHash: c5ea1efb885ab7a04243ee0c06d9350b6ba8375239985d732b1edef6305d81c6
+check_epoch: 5

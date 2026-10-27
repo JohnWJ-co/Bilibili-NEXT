@@ -11,7 +11,9 @@ import SwiftUI
       path: "/x/web-interface/coin/add", body: ["csrf": "fixture-csrf"], authentication: api.authenticationGeneration)
     var completed = false
     var failure: String?
-    let coordinator = OfficialChallengeCoordinator(api: api, challenge: challenge, completed: { completed = true },
+    let webSession = WebSession()
+    let coordinator = OfficialChallengeCoordinator(api: api, challenge: challenge, webSession: webSession,
+      completed: { completed = true },
       error: Binding(get: { failure }, set: { failure = $0 }))
     let view = coordinator.makeView()
     defer { coordinator.stop(view) }
@@ -36,7 +38,9 @@ import SwiftUI
       path: "/x/web-interface/coin/add", body: ["csrf": "fixture-csrf"], authentication: api.authenticationGeneration)
     var completed = false
     var failure: String?
-    let coordinator = OfficialChallengeCoordinator(api: api, challenge: challenge, completed: { completed = true },
+    let webSession = WebSession()
+    let coordinator = OfficialChallengeCoordinator(api: api, challenge: challenge, webSession: webSession,
+      completed: { completed = true },
       error: Binding(get: { failure }, set: { failure = $0 }))
     let view = coordinator.makeView()
     defer { coordinator.stop(view) }
