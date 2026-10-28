@@ -65,12 +65,14 @@ struct VideoCounts: Sendable {
   var coins: Int
   var favorites: Int
   var shares: Int
+  var danmaku: Int
   var replies: Int?
   init(_ data: [String: Any] = [:]) {
     likes = max(0, data["like"] as? Int ?? 0)
     coins = max(0, data["coin"] as? Int ?? 0)
     favorites = max(0, data["favorite"] as? Int ?? 0)
     shares = max(0, data["share"] as? Int ?? 0)
+    danmaku = max(0, data["danmaku"] as? Int ?? 0)
     replies = (data["reply"] as? Int).map { max(0, $0) }
   }
 }

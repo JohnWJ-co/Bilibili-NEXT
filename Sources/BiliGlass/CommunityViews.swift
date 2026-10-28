@@ -6,8 +6,11 @@ struct CommentsView: View {
   let resourceType: Int
   let model: Comments?
   let verificationURL: URL?
-  init(store: Store, aid: Int, type: Int = 1, model: Comments? = nil, verificationURL: URL? = nil) {
+  /// Drops the title and count when a surrounding tab already shows them.
+  let compactHeader: Bool
+  init(store: Store, aid: Int, type: Int = 1, model: Comments? = nil, verificationURL: URL? = nil, compactHeader: Bool = false) {
     self.store = store
+    self.compactHeader = compactHeader
     self.aid = aid
     resourceType = type
     self.model = model
@@ -17,8 +20,10 @@ struct CommentsView: View {
     @Bindable var comments = model ?? store.comments
     LazyVStack(alignment: .leading, spacing: 20) {
       HStack {
-        Text("评论").font(.title2.bold())
-        Text("\(comments.count)").foregroundStyle(.secondary)
+        if !compactHeader {
+          Text("评论").font(.title2.bold())
+          Text("\(comments.count)").foregroundStyle(.secondary)
+        }
         if !comments.items.isEmpty { Text("已加载 \(comments.items.count) 个主楼").font(.caption).foregroundStyle(.tertiary) }
         Spacer()
         Picker("排序", selection: $comments.sort) {

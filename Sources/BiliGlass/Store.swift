@@ -393,6 +393,12 @@ private struct FeedSnapshot: Codable {
     playback.saveCurrentProgress(); playback.personAvoidance.stop()
     danmaku.stop(); comments.stop()
   }
+  /// The player's back button: hand off to the mini player, or stop outright
+  /// when the user prefers. Leaving first saves progress before anything stops.
+  func backFromPlayer() {
+    leavePlayer()
+    if UserDefaults.standard.bool(forKey: "stopPlaybackOnBack") { closeMiniPlayer() }
+  }
   func closeMiniPlayer() {
     playback.stop(); isPlaybackOpen = false; showPlayer = false
     danmaku.stop(); comments.stop(); videoActions.clear(); extras.reset()

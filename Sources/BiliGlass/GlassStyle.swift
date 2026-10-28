@@ -76,26 +76,24 @@ private struct CardSurface: ViewModifier {
     }
   }
 }
-/// Replaces the system glass buttons: a solid tinted fill, no backdrop sampling.
+/// Replaces the system glass buttons: one solid pink fill everywhere, no backdrop
+/// sampling. The fill ignores `.tint` so a neutral tint can't wash out the label.
 struct PanelButtonStyle: ButtonStyle {
-  var neutral = false
   @Environment(\.isEnabled) private var isEnabled
   @Environment(\.controlSize) private var controlSize
   func makeBody(configuration: Configuration) -> some View {
     let small = controlSize == .small || controlSize == .mini
     configuration.label
-      .foregroundStyle(neutral ? AnyShapeStyle(.background) : AnyShapeStyle(.white))
+      .foregroundStyle(.white)
       .padding(.horizontal, small ? 8 : 10).padding(.vertical, small ? 3 : 4)
       .frame(minHeight: small ? 20 : 24)
-      .background(neutral ? AnyShapeStyle(.primary.opacity(0.85)) : AnyShapeStyle(.tint),
-        in: .rect(cornerRadius: small ? 5 : 6))
+      .background(biliPink, in: .rect(cornerRadius: small ? 5 : 6))
       .contentShape(.rect(cornerRadius: 6))
       .opacity(isEnabled ? (configuration.isPressed ? 0.72 : 1) : 0.4)
   }
 }
 extension ButtonStyle where Self == PanelButtonStyle {
   static var panel: PanelButtonStyle { PanelButtonStyle() }
-  static var panelNeutral: PanelButtonStyle { PanelButtonStyle(neutral: true) }
 }
 private struct ScrollHoverPause: ViewModifier {
   @State private var scrolling = false

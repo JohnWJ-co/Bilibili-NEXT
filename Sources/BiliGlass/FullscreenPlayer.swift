@@ -101,8 +101,8 @@ struct FullscreenPlayerContent: View {
               ForEach(Array(Set(streams.videos.map(\.id))).sorted(by:>),id:\.self) { quality in
                 Button(streams.names[quality] ?? String(quality)) { store.playback.selectQuality(quality,api:store.api) }
               }
-            } label: { Text(streams.names[store.playback.selectedQuality] ?? "清晰度").foregroundStyle(.primary) }
-              .tint(.primary)
+            } label: { Text(streams.names[store.playback.selectedQuality] ?? "清晰度") }
+              .buttonStyle(.panel)
           }
         }.buttonStyle(.panel).padding(14).appGlass(22)
           .onHover { hoveringControls = $0; if $0 { wake() } }

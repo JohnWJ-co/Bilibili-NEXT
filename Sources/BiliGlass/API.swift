@@ -25,6 +25,7 @@ struct Video: Identifiable, Codable, Hashable {
   var ownerID: Int? = nil
   var progress: Int? = nil
   var recommendationTrackID: String? = nil
+  var danmaku: Int? = nil
   static func deduplicated(_ videos: [Video], excluding: Set<String> = []) -> [Video] {
     var seen = excluding
     return videos.filter { seen.insert($0.id).inserted }
@@ -43,7 +44,8 @@ struct Video: Identifiable, Codable, Hashable {
       views: stat["view"] as? Int ?? j["play"] as? Int ?? 0,
       publishedAt: ((j["pubdate"] as? NSNumber)?.doubleValue ?? (j["created"] as? NSNumber)?.doubleValue).flatMap { $0 > 0 && $0.isFinite ? Date(timeIntervalSince1970: $0) : nil },
       aid: j["aid"] as? Int ?? j["id"] as? Int, ownerID: owner["mid"] as? Int, progress: j["progress"] as? Int,
-      recommendationTrackID: j["track_id"] as? String ?? j["trackid"] as? String)
+      recommendationTrackID: j["track_id"] as? String ?? j["trackid"] as? String,
+      danmaku: stat["danmaku"] as? Int ?? j["video_review"] as? Int)
   }
 }
 struct Page: Identifiable {

@@ -235,41 +235,56 @@ struct PlaybackFeatureControls: View {
         Toggle("自动播放下一集", isOn: $autoNext)
         Toggle("单集循环", isOn: $loop)
       } label: { Label("播放顺序", systemImage: "list.bullet") }
-      Button { store.playback.showsSystemControls.toggle() } label: { Label(store.playback.showsSystemControls ? "关闭系统控件" : "画中画…", systemImage: "pip.enter") }
-        .help("显示系统播放器控件，可从中进入画中画")
+      if let aid = store.playback.detail?.aid, aid > 0 {
+        Button { if store.account == nil { store.login() } else { Task { await store.addLater(aid) } } } label: {
+          Label("稍后再看", systemImage: "text.badge.plus")
+        }
+      }
       Button("弹幕列表") { danmakuManager = true }
-      Spacer()
-      if let error = store.extras.subtitleError { Text(error).font(.caption).foregroundStyle(.secondary).lineLimit(1) }
     }.buttonStyle(.panel).sheet(isPresented: $danmakuManager) { DanmakuManagement(store: store) }
   }
 }
 struct VideoDiscovery: View {
   @Bindable var store: Store
   var body: some View {
-    VStack(alignment: .leading, spacing: 14) {
-      if !store.extras.tags.isEmpty {
-        ScrollView(.horizontal) { HStack { ForEach(store.extras.tags) { tag in Button(tag.title) { store.query = tag.title; store.search() }.buttonStyle(.panel) } } }
-      }
-      if !store.currentQueue.isEmpty {
-        Text(store.currentQueueTitle).font(.headline)
-        ScrollView(.horizontal) {
-          HStack { ForEach(store.currentQueue) { item in
-            Button { store.playQueueItem(item) } label: {
-              Text(item.title).font(.callout).lineLimit(2).frame(width: 180, height: 44, alignment: .leading)
-            }.buttonStyle(PanelButtonStyle(neutral: !(item.bvid == store.playback.detail?.video.bvid && (item.cid == nil || item.cid == store.playback.selectedCID))))
-          } }
-        }
-      }
-      HStack { Text("相关推荐").font(.title3.bold()); Spacer(); if store.extras.loading { ProgressView().controlSize(.small) } }
+    LazyVStack(alignment: .leading, spacing: 14) {
+      HStack { Text("相关推荐").font(.headline); Spacer(); if store.extras.loading { ProgressView().controlSize(.small) } }
       if let error = store.extras.error {
         ErrorBanner(text: error) { Task { if let detail = store.playback.detail { await store.extras.load(detail: detail, cid: store.playback.selectedCID, api: store.api, refresh: true) } } }
       }
-      ScrollView(.horizontal) {
-        LazyHStack(alignment: .top, spacing: 12) { ForEach(store.extras.related) { video in
-          Button { store.open(video.bvid) } label: { VideoCard(video: video).frame(width: 240) }.buttonStyle(.plain).contextMenu { VideoContextActions(store: store, video: video) }
-        } }
-      }.frame(height: store.extras.related.isEmpty ? 0 : 250)
+      ForEach(store.extras.related) { video in
+        Button { store.open(video.bvid) } label: { RelatedVideoRow(video: video) }.buttonStyle(.plain)
+          .contextMenu { VideoContextActions(store: store, video: video) }
+      }
     }
+  }
+}
+struct RelatedVideoRow: View {
+  let video: Video
+  var body: some View {
+    HStack(alignment: .top, spacing: 12) {
+      Thumbnail(url: video.cover, mode: .fill).frame(width: 150, height: 84)
+        .clipShape(RoundedRectangle(cornerRadius: 8)).overlay(alignment: .bottomTrailing) {
+          Text(VideoCard.durationText(video.duration)).font(.caption2.monospacedDigit()).foregroundStyle(.white)
+            .padding(EdgeInsets(top: 2, leading: 5, bottom: 2, trailing: 5))
+            .background(.black.opacity(0.65), in: Capsule()).padding(5)
+        }
+      VStack(alignment: .leading, spacing: 4) {
+        Text(video.title).font(.callout.weight(.medium)).lineLimit(2).foregroundStyle(.primary)
+        Spacer(minLength: 0)
+        Text(video.author).lineLimit(1)
+        HStack(spacing: 10) {
+          Label(VideoCard.countText(video.views), systemImage: "play.rectangle")
+          if let danmaku = video.danmaku { Label(VideoCard.countText(danmaku), systemImage: "text.bubble") }
+        }.labelStyle(CompactLabelStyle())
+      }.font(.caption).foregroundStyle(.secondary).frame(height: 84)
+    }.contentShape(Rectangle())
+  }
+}
+/// Icon and text without the system label's wide gap, for dense metadata rows.
+struct CompactLabelStyle: LabelStyle {
+  func makeBody(configuration: Configuration) -> some View {
+    HStack(spacing: 3) { configuration.icon; configuration.title }
   }
 }
 

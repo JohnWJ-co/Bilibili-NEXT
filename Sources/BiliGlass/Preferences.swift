@@ -27,6 +27,7 @@ struct PreferencesView: View {
   @AppStorage("rememberPosition") private var rememberPosition = true
   @AppStorage("syncWatchHistory") private var syncWatchHistory = true
   @AppStorage("autoPlay") private var autoPlay = true
+  @AppStorage("stopPlaybackOnBack") private var stopOnBack = false
   @AppStorage("videoCodecPreference") private var codec = "auto"
   @AppStorage("commentSort") private var commentSort = 1
   @State private var backgroundError: String?
@@ -102,6 +103,10 @@ struct PreferencesView: View {
         Text(VideoCodecPreference.hardwareDecodeSummary + "具体解码方式由系统播放器选择。")
           .font(.caption).foregroundStyle(.secondary)
         toggleRow("打开视频后自动播放", value: $autoPlay)
+        Picker("播放页返回时", selection: $stopOnBack) {
+          Text("小窗口继续播放").tag(false)
+          Text("停止播放").tag(true)
+        }
         toggleRow("记住观看位置", value: $rememberPosition)
         toggleRow("同步观看进度到账号", value: $syncWatchHistory)
         Text("登录后同步新观看的视频；关闭后仅保存在本机。历史页始终保留本机记录入口。")
@@ -156,7 +161,7 @@ struct PreferencesView: View {
           Spacer()
           Button(importing ? "正在处理…" : "选择图片…", action: chooseBackground).disabled(importing)
           if !backgroundImage.isEmpty { Button("恢复默认") { backgroundImage = "" } }
-        }.buttonStyle(.panelNeutral)
+        }.buttonStyle(.panel)
         toggleRow("模糊背景图片", value: $backgroundBlur).disabled(backgroundImage.isEmpty)
         sliderRow("背景可见度", value: $backgroundOpacity, range: 0.2...1, step: 0.05, display: "\(Int(backgroundOpacity * 100))%")
           .disabled(backgroundImage.isEmpty)
@@ -239,7 +244,7 @@ struct PreferencesView: View {
               at: AppPaths.cache, withIntermediateDirectories: true)
             NSWorkspace.shared.open(AppPaths.cache)
           }
-        }.buttonStyle(.panelNeutral)
+        }.buttonStyle(.panel)
         Text("修改目录后，新缓存保存到新位置，已有缓存仍可在下载页管理。").font(.caption).foregroundStyle(.secondary)
       }
       section("图片缓存") {
@@ -248,7 +253,7 @@ struct PreferencesView: View {
             await ThumbnailCache.shared.clear()
             cleared = true
           }
-        }.buttonStyle(.panelNeutral)
+        }.buttonStyle(.panel)
         Text("解码图片缓存上限 32 MB，按显示尺寸加载；原图仅使用 128 MB 磁盘缓存。正在显示的图片另占内存。").font(.caption).foregroundStyle(.secondary)
       }
     }

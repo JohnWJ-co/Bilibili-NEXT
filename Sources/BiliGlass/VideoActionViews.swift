@@ -17,33 +17,34 @@ struct VideoActionBar: View {
   private var identity: String { "\(detail.aid):\(store.account?.mid ?? 0):\(store.api.authenticationGeneration)" }
   private var disabled: Bool { detail.aid <= 0 || model.operation != nil || (store.account != nil && (model.loading || model.relation == nil)) }
   var body: some View {
-    VStack(alignment: .leading, spacing: 12) {
-      HStack(spacing: 10) {
-        action(title: model.relation?.liked == true ? "已点赞" : "点赞", icon: model.relation?.liked == true ? "hand.thumbsup.fill" : "hand.thumbsup",
-               count: model.counts.likes, active: model.relation?.liked == true, busy: model.operation == "like", holdToTriple: true) {
+    VStack(alignment: .leading, spacing: 10) {
+      HStack(spacing: 0) {
+        action(title: model.relation?.liked == true ? "已点赞" : "点赞", icon: "hand.thumbsup.fill",
+               caption: VideoCard.countText(model.counts.likes), active: model.relation?.liked == true, busy: model.operation == "like",
+               ring: true, holdToTriple: true) {
           authenticated { Task { await model.toggleLike(api: store.api) } }
         }.disabled(disabled).help("点击点赞，按住 1.2 秒完成三连")
-        action(title: (model.relation?.coins ?? 0) > 0 ? "已投 \(model.relation!.coins) 枚" : "投币", icon: "c.circle",
-               count: model.counts.coins, active: (model.relation?.coins ?? 0) > 0) { authenticated { sheet = .coin } }.disabled(disabled)
-        action(title: model.relation?.favorited == true ? "已收藏" : "收藏", icon: model.relation?.favorited == true ? "star.fill" : "star",
-               count: model.counts.favorites, active: model.relation?.favorited == true) { authenticated { sheet = .favorite } }.disabled(disabled)
-        action(title: "分享", icon: "square.and.arrow.up", count: model.counts.shares) { sheet = .share }
+        action(title: (model.relation?.coins ?? 0) > 0 ? "已投 \(model.relation!.coins) 枚" : "投币", icon: "c.circle.fill",
+               caption: VideoCard.countText(model.counts.coins), active: (model.relation?.coins ?? 0) > 0, ring: true) { authenticated { sheet = .coin } }.disabled(disabled)
+        action(title: model.relation?.favorited == true ? "已收藏" : "收藏", icon: "star.fill",
+               caption: VideoCard.countText(model.counts.favorites), active: model.relation?.favorited == true, ring: true) { authenticated { sheet = .favorite } }.disabled(disabled)
+        let playback = store.playback
+        action(title: "缓存", icon: "arrow.down.circle.fill", caption: "缓存") {
+          store.downloads.enqueue(video: detail.video, cid: playback.selectedCID, qn: playback.selectedQuality, api: store.api, cached: true)
+        }.disabled(playback.streams == nil || playback.loading || playback.isOffline).help("缓存到应用，可在下载页查看")
+        action(title: "分享", icon: "arrowshape.turn.up.right.fill", caption: VideoCard.countText(model.counts.shares)) { sheet = .share }
       }
-      HStack(spacing: 12) {
-        Button { authenticated { Task { await store.addLater(detail.aid) } } } label: { Label("稍后再看", systemImage: "text.badge.plus") }
-        if store.account != nil {
-          Button { Task { await refresh() } } label: { Image(systemName: "arrow.clockwise") }
-            .help("刷新互动状态").accessibilityLabel("刷新互动状态").disabled(model.loading || model.operation != nil)
+      // Status only; the row disappears when there is nothing to report.
+      if model.loading || tripleProgress > 0 || model.operation == "triple" || model.notice != nil {
+        HStack(spacing: 10) {
+          if model.loading { ProgressView().controlSize(.small); Text("同步状态").font(.caption).foregroundStyle(.secondary) }
+          if tripleProgress > 0 || model.operation == "triple" {
+            Text(model.operation == "triple" ? "正在三连…" : "按住三连 · 最多 \(detail.copyright == 2 ? 1 : 2) 枚，松开取消")
+              .font(.caption).foregroundStyle(.secondary)
+          } else if let notice = model.notice { Text(notice).font(.caption).foregroundStyle(.secondary).lineLimit(2).transition(.opacity) }
+          Spacer(minLength: 0)
         }
-        if model.loading { ProgressView().controlSize(.small); Text("同步状态").font(.caption).foregroundStyle(.secondary) }
-        if tripleProgress > 0 || model.operation == "triple" {
-          Text(model.operation == "triple" ? "正在三连…" : "按住三连 · 最多 \(detail.copyright == 2 ? 1 : 2) 枚，松开取消")
-            .font(.caption).foregroundStyle(.secondary)
-        } else if let notice = model.notice { Text(notice).font(.caption).foregroundStyle(.secondary).transition(.opacity) }
-        Spacer(minLength: 4)
-        Toggle("弹幕", isOn: $store.danmaku.enabled).toggleStyle(.switch).fixedSize()
-          .onChange(of: store.danmaku.enabled) { UserDefaults.standard.set(store.danmaku.enabled, forKey: "danmakuEnabled") }
-      }.buttonStyle(.panel)
+      }
       if let error = model.error {
         HStack {
           Label(error, systemImage: "exclamationmark.circle").font(.callout).foregroundStyle(.secondary)
@@ -73,26 +74,22 @@ struct VideoActionBar: View {
   }
   private func refresh() async { await model.load(detail: detail, accountID: store.account?.mid, api: store.api) }
   private func authenticated(_ action: () -> Void) { if store.account == nil { store.login() } else { action() } }
-  private func action(title: String, icon: String, count: Int, active: Bool = false, busy: Bool = false, holdToTriple: Bool = false, perform: @escaping () -> Void) -> some View {
+  private func action(title: String, icon: String, caption: String, active: Bool = false, busy: Bool = false, ring: Bool = false, holdToTriple: Bool = false, perform: @escaping () -> Void) -> some View {
     let button = Button(action: perform) {
-      HStack(spacing: 10) {
-        if busy { ProgressView().controlSize(.small).frame(width: 22) }
-        else { Image(systemName: icon).font(.title3).frame(width: 22) }
-        VStack(alignment: .leading, spacing: 3) {
-          Text(title).font(.callout.weight(.medium))
-          Text(count >= 10000 ? String(format: "%.1f万", Double(count) / 10000) : String(count)).font(.caption.monospacedDigit()).foregroundStyle(.secondary)
-        }
-        Spacer(minLength: 0)
-      }.padding(.horizontal, 8).padding(.vertical, 5).frame(maxWidth: .infinity, minHeight: 40).contentShape(.rect(cornerRadius: 18))
-    }.foregroundStyle(.primary).tint(.primary)
-      .appGlass(18, tint: active ? biliPink.opacity(0.22) : .clear)
-      .overlay {
-        if icon != "square.and.arrow.up" && tripleProgress > 0 {
-          RoundedRectangle(cornerRadius: 18).trim(from: 0, to: tripleProgress)
-            .stroke(biliPink, style: StrokeStyle(lineWidth: 2.5, lineCap: .round)).allowsHitTesting(false)
-        }
-      }
-      .accessibilityLabel(title).accessibilityValue("\(count)")
+      VStack(spacing: 5) {
+        ZStack {
+          if busy { ProgressView().controlSize(.small) }
+          else { Image(systemName: icon).font(.system(size: 22)).foregroundStyle(active ? biliPink : .primary) }
+          if ring && tripleProgress > 0 {
+            Circle().trim(from: 0, to: tripleProgress).stroke(biliPink, style: StrokeStyle(lineWidth: 2.5, lineCap: .round))
+              .rotationEffect(.degrees(-90)).frame(width: 38, height: 38)
+          }
+        }.frame(width: 40, height: 40)
+        Text(caption).font(.caption.monospacedDigit()).foregroundStyle(active ? AnyShapeStyle(biliPink) : AnyShapeStyle(.secondary))
+          .lineLimit(1)
+      }.frame(maxWidth: .infinity).padding(.vertical, 2).contentShape(Rectangle())
+    }
+      .accessibilityLabel(title).accessibilityValue(caption)
     return Group {
       if holdToTriple {
         button.buttonStyle(TriplePressStyle(progress: $tripleProgress, perform: {

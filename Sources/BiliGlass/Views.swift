@@ -38,6 +38,16 @@ struct RootView: View {
         .allowsHitTesting(!store.fullscreen.isPresented)
         .accessibilityHidden(store.fullscreen.isPresented)
       }
+      if !store.fullscreen.isPresented {
+        // The strip from the window's top edge down to the panels stands in
+        // for the hidden title bar.
+        GeometryReader { g in
+          VStack(spacing: 0) {
+            Color.clear.frame(height: g.safeAreaInsets.top + 22).titleBarBehavior()
+            Spacer(minLength: 0)
+          }.ignoresSafeArea(edges: .top)
+        }
+      }
       if store.fullscreen.isPresented {
         FullscreenPlayerContent(store: store, close: { store.fullscreen.close() }).ignoresSafeArea()
       }
@@ -300,10 +310,10 @@ struct RootView: View {
     HStack(spacing: 14) {
       if store.showPlayer {
         Button {
-          store.leavePlayer()
+          store.backFromPlayer()
         } label: {
           Image(systemName: "chevron.left")
-        }.buttonStyle(.panel).help("返回")
+        }.buttonStyle(.panel).help(UserDefaults.standard.bool(forKey: "stopPlaybackOnBack") ? "返回并停止播放" : "返回，小窗口继续播放")
       }
       HStack(spacing: 10) {
         Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
@@ -325,7 +335,8 @@ struct RootView: View {
       } label: {
         Image(systemName: "arrow.clockwise")
       }.help("刷新")
-    }.buttonStyle(.panelNeutral).padding(.horizontal, 12).frame(height: AppLayout.toolbarHeight).floatingGlass(AppLayout.panelRadius)
+    }.buttonStyle(.panel).padding(.horizontal, 12).frame(height: AppLayout.toolbarHeight)
+      .background { Color.clear.titleBarBehavior() }.floatingGlass(AppLayout.panelRadius)
   }
   private var content: some View {
     ZStack {
@@ -470,7 +481,7 @@ struct VideoCard: View {
     VStack(alignment: .leading, spacing: 10) {
       Thumbnail(url: video.cover, mode: .fill).aspectRatio(16 / 9, contentMode: .fit)
         .clipShape(RoundedRectangle(cornerRadius: 12)).overlay(alignment: .bottomTrailing) {
-          Text(duration(video.duration)).font(.caption.monospacedDigit()).foregroundStyle(.white)
+          Text(Self.durationText(video.duration)).font(.caption.monospacedDigit()).foregroundStyle(.white)
             .padding(EdgeInsets(top: 4, leading: 7, bottom: 4, trailing: 7))
             .background(.black.opacity(0.72), in: Capsule()).padding(8)
         }
@@ -481,14 +492,15 @@ struct VideoCard: View {
         Spacer(minLength: 2)
         if showsViews {
           Image(systemName: "play").font(.system(size: 9))
-          Text(
-          video.views >= 10000
-            ? String(format: "%.1f万", Double(video.views) / 10000) : "\(video.views)")
+          Text(Self.countText(video.views))
         }
       }.font(.caption).foregroundStyle(.secondary)
     }.padding(12).cardSurface(22).contentShape(RoundedRectangle(cornerRadius: 22)).cardHover()
   }
-  private func duration(_ t: Int) -> String {
+  static func countText(_ value: Int) -> String {
+    value >= 10000 ? String(format: "%.1f万", Double(value) / 10000) : "\(value)"
+  }
+  static func durationText(_ t: Int) -> String {
     t >= 3600
       ? String(format: "%d:%02d:%02d", t / 3600, t / 60 % 60, t % 60)
       : String(format: "%d:%02d", t / 60, t % 60)
@@ -544,138 +556,14 @@ struct ErrorBanner: View {
 }
 struct PlayerPage: View {
   @Bindable var store: Store
-  @State private var commentAnchor: Int?
   var body: some View {
     @Bindable var p = store.playback
     GeometryReader { viewport in
-    ScrollView {
-      VStack(alignment: .leading, spacing: 20) {
-        ZStack {
-          NativePlayer(playback: p, items: store.danmaku.items, enabled: store.danmaku.enabled, toggleFullscreen: { store.fullscreen.open(store: store) })
-            .frame(height: max(270, min((min(viewport.size.width, 1280) - 40) * 9 / 16, viewport.size.height - 210)))
-          PlaybackStatusOverlay(playback: p)
-          SubtitleOverlay(extras: store.extras, playback: p)
-        }.background(.black).clipShape(RoundedRectangle(cornerRadius: 16))
-          .overlay(alignment: .top) {
-            if p.isBoosting { Label(p.boostLabel, systemImage: "forward.fill").font(.callout).padding(10).blurPanel(Capsule()).padding(16).colorScheme(.dark).allowsHitTesting(false) }
-          }
-          .overlay { PlaybackDetailsOverlay(playback: p) }
-        PlayerControls(playback: p, toggleFullscreen: { store.fullscreen.open(store: store) }, extras: store.extras)
-        PlaybackFeatureControls(store: store)
-        if let error = p.error {
-          VStack(alignment: .leading, spacing: 10) {
-            ErrorBanner(text: error) { p.retry(api: store.api) }
-
-          }
-        }
-        HStack(spacing: 12) {
-          if let s = p.streams {
-            Menu {
-              ForEach(Array(Set(s.videos.map(\.id))).sorted(by: >), id: \.self) { qn in
-                Button {
-                  p.selectQuality(qn, api: store.api)
-                } label: {
-                  if qn == p.selectedQuality {
-                    Label(s.names[qn] ?? "\(qn)", systemImage: "checkmark")
-                  } else {
-                    Text(s.names[qn] ?? "\(qn)")
-                  }
-                }
-              }
-            } label: {
-              Label(s.names[p.selectedQuality] ?? "清晰度", systemImage: "slider.horizontal.3").foregroundStyle(.primary)
-            }.tint(.primary)
-          }
-          Menu {
-            ForEach([0.5, 0.75, 1, 1.25, 1.5, 2], id: \.self) { rate in
-              Button("\(rate.formatted())×") { p.setSpeed(Float(rate)) }
-            }
-          } label: {
-            Text("\(Double(p.speed).formatted())×").foregroundStyle(.primary)
-          }.tint(.primary)
-          if !p.actualSize.isEmpty {
-            Text(p.actualSize + (p.sourceFormat.isEmpty ? "" : " · " + p.sourceFormat)).help(
-              p.decodedFormat
-            ).font(.caption.monospacedDigit()).foregroundStyle(.secondary)
-          }
-          Spacer()
-          Button { p.showsDetails.toggle() } label: { Image(systemName: "waveform.path.ecg") }.help("播放详情").accessibilityLabel("播放详情")
-          if let d = p.detail, p.streams != nil {
-            Menu {
-              Button("缓存到应用") {
-                store.downloads.enqueue(
-                  video: d.video, cid: p.selectedCID, qn: p.selectedQuality, api: store.api,
-                  cached: true)
-              }
-              Button("下载到其他位置…") {
-                store.downloads.enqueue(
-                  video: d.video, cid: p.selectedCID, qn: p.selectedQuality, api: store.api,
-                  cached: false)
-              }
-              Divider()
-              Button("下载弹幕 XML…") {
-                Task {
-                  await store.downloads.saveDanmaku(
-                    video: d.video, cid: p.selectedCID, api: store.api)
-                }
-              }
-            } label: {
-              Label("下载", systemImage: "arrow.down").foregroundStyle(.primary)
-            }.tint(.primary).disabled(p.loading)
-          }
-        }.buttonStyle(.panel).controlSize(.regular)
-        if let d = p.detail {
-          HStack {
-            Text(d.video.title).font(.title2.weight(.semibold)).textSelection(.enabled)
-            Spacer()
-          }
-          if d.aid > 0 {
-            VideoActionBar(store: store, detail: d)
-            DanmakuComposer(store: store, aid: d.aid)
-          }
-          HStack {
-            Button {
-              store.showProfile(d.ownerID)
-            } label: {
-              Label(d.video.author, systemImage: "person.crop.circle")
-            }.buttonStyle(.plain)
-            Text(d.video.bvid)
-            if let date = d.video.publishedAt {
-              Text("发布于 " + date.formatted(AppDateFormat.timestamp))
-                .help("发布时间 · 当前时区")
-            }
-          }.font(.callout).foregroundStyle(.secondary)
-          if d.pages.count > 1 && !p.isOffline {
-            Text("分集").font(.headline)
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 180), spacing: 10)], spacing: 10) {
-              ForEach(d.pages) { page in
-                Button {
-                  p.selectPage(
-                    page.id, api: store.api, resume: store.position(d.video.bvid, cid: page.id))
-                } label: {
-                  HStack {
-                    Text("\(page.number)").foregroundStyle(.secondary)
-                    Text(page.title).lineLimit(1)
-                    Spacer()
-                    if p.selectedCID == page.id {
-                      Image(systemName: "waveform").foregroundStyle(biliPink)
-                    }
-                  }.padding(10).frame(maxWidth: .infinity, alignment: .leading)
-                }.buttonStyle(.panel).disabled(p.loading)
-              }
-            }
-          }
-          if !d.description.isEmpty {
-            Text(d.description).font(.callout).foregroundStyle(.secondary).textSelection(.enabled)
-              .lineSpacing(5).padding(.top, 4)
-          }
-          VideoDiscovery(store: store)
-          Divider().padding(.vertical, 8)
-          if d.aid > 0 { CommentsView(store: store, aid: d.aid).padding(.top, 8) }
-        }
-      }.padding(20).frame(maxWidth: 1280).frame(maxWidth: .infinity)
-    }.scrollPosition(id: $commentAnchor, anchor: .top)
-      .floatingGlass(24).clipShape(RoundedRectangle(cornerRadius: 24)).task(id: p.selectedCID) {
+      HStack(alignment: .top, spacing: 16) {
+        stage(p)
+        PlayerSidebar(store: store).frame(width: min(405, max(305, viewport.size.width * 0.32 - 15)))
+      }
+    }.task(id: p.selectedCID) {
       if p.isOffline {
         store.danmaku.start(
           cid: p.selectedCID, api: store.api, player: p.player, localSidecar: p.localDanmaku)
@@ -685,7 +573,100 @@ struct PlayerPage: View {
       }
       if let detail = p.detail, !p.isOffline { await store.extras.load(detail: detail, cid: p.selectedCID, api: store.api) }
     }
+  }
+  /// The left column never scrolls. The video box takes every point the
+  /// controls leave, so they stay pinned to the bottom edge; the player
+  /// letterboxes inside it whatever the window's aspect ratio.
+  private func stage(_ p: Playback) -> some View {
+    VStack(alignment: .leading, spacing: 14) {
+      ZStack {
+        NativePlayer(playback: p, items: store.danmaku.items, enabled: store.danmaku.enabled, toggleFullscreen: { store.fullscreen.open(store: store) })
+        PlaybackStatusOverlay(playback: p)
+        SubtitleOverlay(extras: store.extras, playback: p)
+      }.frame(maxWidth: .infinity, minHeight: 180, maxHeight: .infinity)
+        .background(.black).clipShape(RoundedRectangle(cornerRadius: 16))
+        .overlay(alignment: .top) {
+          if p.isBoosting { Label(p.boostLabel, systemImage: "forward.fill").font(.callout).padding(10).blurPanel(Capsule()).padding(16).colorScheme(.dark).allowsHitTesting(false) }
+        }
+        .overlay { PlaybackDetailsOverlay(playback: p) }
+      VStack(alignment: .leading, spacing: 12) {
+        PlayerControls(playback: p, toggleFullscreen: { store.fullscreen.open(store: store) }, extras: store.extras)
+        fitOrScroll(playbackRow(p))
+        if let error = p.error { ErrorBanner(text: error) { p.retry(api: store.api) } }
+        if let d = p.detail, d.aid > 0 { DanmakuComposer(store: store, aid: d.aid) }
+      }.fixedSize(horizontal: false, vertical: true)
+    }.padding(16).floatingGlass(24).clipShape(RoundedRectangle(cornerRadius: 24))
+  }
+  /// Rows keep their natural layout when they fit and scroll sideways when the sidebar squeezes them.
+  private func fitOrScroll<Row: View>(_ row: Row) -> some View {
+    ViewThatFits(in: .horizontal) {
+      row
+      ScrollView(.horizontal) { row }.scrollIndicators(.hidden)
     }
+  }
+  /// One row: features, quality and speed on the left; danmaku, details and download on the right.
+  private func playbackRow(_ p: Playback) -> some View {
+    HStack(spacing: 12) {
+      PlaybackFeatureControls(store: store)
+      if let s = p.streams {
+        Menu {
+          ForEach(Array(Set(s.videos.map(\.id))).sorted(by: >), id: \.self) { qn in
+            Button {
+              p.selectQuality(qn, api: store.api)
+            } label: {
+              if qn == p.selectedQuality {
+                Label(s.names[qn] ?? "\(qn)", systemImage: "checkmark")
+              } else {
+                Text(s.names[qn] ?? "\(qn)")
+              }
+            }
+          }
+        } label: {
+          Label(s.names[p.selectedQuality] ?? "清晰度", systemImage: "slider.horizontal.3")
+        }.buttonStyle(.panel).help(formatSummary(p))
+      }
+      Menu {
+        ForEach([0.5, 0.75, 1, 1.25, 1.5, 2], id: \.self) { rate in
+          Button("\(rate.formatted())×") { p.setSpeed(Float(rate)) }
+        }
+      } label: {
+        Text("\(Double(p.speed).formatted())×")
+      }.buttonStyle(.panel)
+      Spacer(minLength: 12)
+      if let error = store.extras.subtitleError { Text(error).font(.caption).foregroundStyle(.secondary).lineLimit(1) }
+      Toggle("弹幕", isOn: $store.danmaku.enabled).toggleStyle(.switch).fixedSize()
+        .onChange(of: store.danmaku.enabled) { UserDefaults.standard.set(store.danmaku.enabled, forKey: "danmakuEnabled") }
+      Button { p.showsDetails.toggle() } label: { Image(systemName: "waveform.path.ecg") }.help("播放详情").accessibilityLabel("播放详情")
+      if let d = p.detail, p.streams != nil {
+        Menu {
+          Button("缓存到应用") {
+            store.downloads.enqueue(
+              video: d.video, cid: p.selectedCID, qn: p.selectedQuality, api: store.api,
+              cached: true)
+          }
+          Button("下载到其他位置…") {
+            store.downloads.enqueue(
+              video: d.video, cid: p.selectedCID, qn: p.selectedQuality, api: store.api,
+              cached: false)
+          }
+          Divider()
+          Button("下载弹幕 XML…") {
+            Task {
+              await store.downloads.saveDanmaku(
+                video: d.video, cid: p.selectedCID, api: store.api)
+            }
+          }
+        } label: {
+          Label("下载", systemImage: "arrow.down")
+        }.buttonStyle(.panel).disabled(p.loading)
+      }
+    }.buttonStyle(.panel).controlSize(.regular)
+  }
+  /// Decoded size and codec moved off the row into the quality button's tooltip.
+  private func formatSummary(_ p: Playback) -> String {
+    let size = p.actualSize.isEmpty ? "" : p.actualSize + (p.sourceFormat.isEmpty ? "" : " · " + p.sourceFormat)
+    let lines = [size, p.decodedFormat].filter { !$0.isEmpty }
+    return lines.isEmpty ? "清晰度" : lines.joined(separator: "\n")
   }
 }
 struct LoginSheet: View {
