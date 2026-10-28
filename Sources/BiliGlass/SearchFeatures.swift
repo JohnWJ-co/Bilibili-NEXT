@@ -64,7 +64,7 @@ struct SearchAssistance: View {
       }
       ScrollView(.horizontal) {
         HStack { ForEach(Array((store.query.isEmpty ? store.searchHistory : suggestions).prefix(8)), id: \.self) { term in
-          Button(term) { store.query = term; store.search() }.buttonStyle(.glass)
+          Button(term) { store.query = term; store.search() }.buttonStyle(.panel)
         } }
       }
     }.padding(12).floatingGlass(18)
@@ -84,7 +84,7 @@ struct SearchUserResults: View {
           Thumbnail(url: user.face, mode: .fill, placeholder: "person.crop.circle").frame(width: 56, height: 56).clipShape(.circle)
           VStack(alignment: .leading, spacing: 5) { Text(user.name).font(.headline); Text(user.bio).font(.callout).lineLimit(2).foregroundStyle(.secondary); Text("\(user.fans) 位粉丝").font(.caption).foregroundStyle(.secondary) }
           Spacer(); Image(systemName: "chevron.right")
-        }.padding(16).floatingGlass(18).contentShape(.rect(cornerRadius: 18))
+        }.padding(16).cardSurface(18).contentShape(.rect(cornerRadius: 18))
       }.buttonStyle(.plain)
     } }
   }

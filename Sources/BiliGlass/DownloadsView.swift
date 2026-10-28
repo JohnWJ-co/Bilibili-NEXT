@@ -12,12 +12,11 @@ struct DownloadPage: View {
   }
   var body: some View {
     ScrollView {
-      GlassEffectContainer(spacing: 20) {
       LazyVStack(alignment: .leading, spacing: 20) {
         HStack {
           Text("下载").font(AppLayout.pageTitle)
           Spacer()
-          SettingsLink { Label("下载设置", systemImage: "gearshape") }.buttonStyle(.glass)
+          SettingsLink { Label("下载设置", systemImage: "gearshape") }.buttonStyle(.panel)
         }
         Picker("显示", selection: $filter) {
           Text("全部").tag(0)
@@ -64,7 +63,7 @@ struct DownloadPage: View {
               }.font(.caption).foregroundStyle(.secondary)
             }
             if job.cancelled || job.error != nil {
-              Button("继续") { store.downloads.retry(job, api: store.api) }.buttonStyle(.glass)
+              Button("继续") { store.downloads.retry(job, api: store.api) }.buttonStyle(.panel)
             } else {
               Button {
                 store.downloads.pause(job)
@@ -96,7 +95,7 @@ struct DownloadPage: View {
             if FileManager.default.fileExists(atPath: entry.path) {
               Button("播放") {
                 store.openSaved(entry)
-              }.buttonStyle(.glass)
+              }.buttonStyle(.panel)
               Button {
                 NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: entry.path)])
               } label: {
@@ -118,7 +117,6 @@ struct DownloadPage: View {
             "还没有下载", systemImage: "arrow.down.circle", description: Text("在播放页选择清晰度后缓存或下载"))
         }
       }.padding(AppLayout.pageInset).padding(.vertical, 8)
-      }
     }
     .confirmationDialog(
       "将这条缓存移到废纸篓？",

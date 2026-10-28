@@ -9,7 +9,7 @@ struct PlaybackStatusOverlay: View {
         ProgressView().controlSize(.small)
         Text(playback.loading ? playback.loadingMessage : "缓冲中…").font(.callout)
       }.padding(.horizontal, 22).padding(.vertical, 18)
-        .glassEffect(.regular, in: .rect(cornerRadius: 20)).colorScheme(.dark)
+        .appGlass(20).colorScheme(.dark)
         .allowsHitTesting(false)
     }
   }
@@ -44,7 +44,7 @@ struct PlaybackDetails: View {
         Label("播放详情", systemImage: "waveform.path.ecg").font(.headline)
         Spacer()
         Button { playback.showsDetails = false } label: { Image(systemName: "xmark") }
-          .buttonStyle(.glass).accessibilityLabel("关闭播放详情").help("关闭播放详情")
+          .buttonStyle(.panel).accessibilityLabel("关闭播放详情").help("关闭播放详情")
       }
       Divider()
       ScrollView {
@@ -97,10 +97,10 @@ struct PlaybackDetails: View {
           NSPasteboard.general.setString(report, forType: .string)
           copied = true
         }
-      }.buttonStyle(.glass).help("包含版本、播放阶段和线路错误；不包含登录凭据或完整媒体地址")
+      }.buttonStyle(.panel).help("包含版本、播放阶段和线路错误；不包含登录凭据或完整媒体地址")
     }.padding(14)
       .background(.black.opacity(0.38), in: .rect(cornerRadius: 18))
-      .background { Color.clear.glassEffect(.clear, in: .rect(cornerRadius: 18)) }
+      .appGlass(18)
       .colorScheme(.dark).tint(.white)
       .task {
         while !Task.isCancelled {

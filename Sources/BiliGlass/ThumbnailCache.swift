@@ -5,7 +5,15 @@ actor ThumbnailCache {
   static let shared = ThumbnailCache()
   private let cache: URLCache
   private let session: URLSession
-  private let decoded = NSCache<NSString, CGImage>()
+  /// Keyed by URL alone; an entry serves any request at or below the size it was decoded for.
+  private final class Entry {
+    let image: CGImage
+    let pixels: Int
+    init(image: CGImage, pixels: Int) { self.image = image; self.pixels = pixels }
+  }
+  // NSCache is thread-safe, so views read it synchronously while scrolling
+  // instead of waiting a frame on the actor and flashing the placeholder.
+  private nonisolated(unsafe) let decoded = NSCache<NSString, Entry>()
   private var inFlight: [String: Task<CGImage, Error>] = [:]
   private var generation = UUID()
   init() {
@@ -18,8 +26,15 @@ actor ThumbnailCache {
     c.httpCookieStorage = nil
     c.timeoutIntervalForRequest = 20
     session = URLSession(configuration: c)
-    decoded.totalCostLimit = 32 * 1024 * 1024
-    decoded.countLimit = 120
+    // About 90 grid covers at the 900px bucket: several screens of scroll-back.
+    decoded.totalCostLimit = 160 * 1024 * 1024
+    decoded.countLimit = 400
+  }
+  /// Synchronous memory-cache lookup; `maxPixelSize` 0 accepts any decoded size.
+  nonisolated func cached(_ url: URL, maxPixelSize: Int) -> CGImage? {
+    guard let entry = decoded.object(forKey: url.absoluteString as NSString),
+      maxPixelSize == 0 || entry.pixels >= Self.pixelSize(maxPixelSize) else { return nil }
+    return entry.image
   }
   func data(_ url: URL) async throws -> Data {
     guard url.scheme == "https", let host = url.host,
@@ -44,7 +59,7 @@ actor ThumbnailCache {
   func thumbnail(_ url: URL, maxPixelSize: Int = 900) async throws -> CGImage {
     let pixels = Self.pixelSize(maxPixelSize)
     let key = "\(pixels)|\(url.absoluteString)"
-    if let image = decoded.object(forKey: key as NSString) { return image }
+    if let image = cached(url, maxPixelSize: pixels) { return image }
     if let pending = inFlight[key] { return try await pending.value }
     let token = generation
     let pending = Task {
@@ -56,7 +71,10 @@ actor ThumbnailCache {
     defer { if token == generation { inFlight[key] = nil } }
     let image = try await pending.value
     try Task.checkCancellation()
-    if token == generation { decoded.setObject(image, forKey: key as NSString, cost: image.bytesPerRow * image.height) }
+    if token == generation, (decoded.object(forKey: url.absoluteString as NSString)?.pixels ?? 0) < pixels {
+      decoded.setObject(Entry(image: image, pixels: pixels), forKey: url.absoluteString as NSString,
+        cost: image.bytesPerRow * image.height)
+    }
     return image
   }
   static func decode(_ data: Data, maxPixelSize: Int = 900) async throws -> CGImage {

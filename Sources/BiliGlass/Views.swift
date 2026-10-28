@@ -18,14 +18,14 @@ struct RootView: View {
         sidebar(compact: viewport.size.height < 820, collapsed: sidebarCollapsed)
           .frame(width: sidebarWidth)
         VStack(spacing: 16) {
-          GlassEffectContainer { topbar }
+          topbar
           if let reason = store.loginUpgradeReason, !store.loginUpgradeDismissed {
             HStack(spacing: 12) {
               Image(systemName: "person.crop.circle.badge.exclamationmark")
               Text(reason.message).font(.callout).fixedSize(horizontal: false, vertical: true)
               Spacer(minLength: 0)
-              Button("重新登录") { store.login() }.buttonStyle(.glassProminent)
-              Button("稍后") { store.loginUpgradeDismissed = true }.buttonStyle(.glass)
+              Button("重新登录") { store.login() }.buttonStyle(.panel)
+              Button("稍后") { store.loginUpgradeDismissed = true }.buttonStyle(.panel)
             }.padding(14).floatingGlass(18)
           }
           if searchFocused && !store.showPlayer { SearchAssistance(store: store) }
@@ -93,7 +93,7 @@ struct RootView: View {
           } label: {
             Image(systemName: "xmark")
           }.buttonStyle(.plain)
-        }.padding(14).glassEffect(.regular, in: .capsule).padding(20)
+        }.padding(14).blurPanel(Capsule()).padding(20)
       }
     }
     .sheet(isPresented: $store.showLogin, onDismiss: { store.closeLogin() }) {
@@ -172,17 +172,15 @@ struct RootView: View {
         // Glass sampling must stay inside the scrolling viewport. Sharing a
         // container with the fixed account footer lets the scrolled glass/text
         // render through that footer on short windows.
-        GlassEffectContainer(spacing: 16) {
-          VStack(spacing: compact ? 14 : 20) {
-            if collapsed {
-              navigationRail(items: [.recommend, .popular, .regions, .dynamic, .messages])
-              navigationRail(items: [.history, .favorites, .later, .downloads, .profile, .web])
-            } else {
-              navigationGroup("浏览", items: [.recommend, .popular, .regions, .dynamic, .messages], compact: compact)
-              navigationGroup("资料库", items: [.history, .favorites, .later, .downloads, .profile, .web], compact: compact)
-            }
-          }.padding(2)
-        }
+        VStack(spacing: compact ? 14 : 20) {
+          if collapsed {
+            navigationRail(items: [.recommend, .popular, .regions, .dynamic, .messages])
+            navigationRail(items: [.history, .favorites, .later, .downloads, .profile, .web])
+          } else {
+            navigationGroup("浏览", items: [.recommend, .popular, .regions, .dynamic, .messages], compact: compact)
+            navigationGroup("资料库", items: [.history, .favorites, .later, .downloads, .profile, .web], compact: compact)
+          }
+        }.padding(2)
       }.frame(minHeight: 0, maxHeight: .infinity)
         .scrollIndicators(.hidden).compositingGroup().clipped()
       accountFooter(collapsed: collapsed).fixedSize(horizontal: false, vertical: true)
@@ -305,7 +303,7 @@ struct RootView: View {
           store.leavePlayer()
         } label: {
           Image(systemName: "chevron.left")
-        }.buttonStyle(.glass).help("返回")
+        }.buttonStyle(.panel).help("返回")
       }
       HStack(spacing: 10) {
         Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
@@ -327,7 +325,7 @@ struct RootView: View {
       } label: {
         Image(systemName: "arrow.clockwise")
       }.help("刷新")
-    }.buttonStyle(.glass).tint(.primary).padding(.horizontal, 12).frame(height: AppLayout.toolbarHeight).floatingGlass(AppLayout.panelRadius)
+    }.buttonStyle(.panelNeutral).padding(.horizontal, 12).frame(height: AppLayout.toolbarHeight).floatingGlass(AppLayout.panelRadius)
   }
   private var content: some View {
     ZStack {
@@ -436,10 +434,10 @@ struct RootView: View {
           LoadMoreFooter(loading: store.busy, hasMore: store.hasMore, error: store.error, count: store.videos.count + store.searchUsers.count) { store.more() }
         }
       }.padding(AppLayout.pageInset).padding(.vertical, 8)
-    }.overlay { if store.busy && store.videos.isEmpty { ProgressView("正在加载") } }
+    }.pausesCardHoverWhileScrolling()
+      .overlay { if store.busy && store.videos.isEmpty { ProgressView("正在加载") } }
   }
   private func videoGrid(_ videos: [Video]) -> some View {
-    GlassEffectContainer(spacing: 0) {
     LazyVGrid(
       columns: [GridItem(.adaptive(minimum: 240, maximum: 390), spacing: 18)], alignment: .leading,
       spacing: 20
@@ -463,7 +461,6 @@ struct RootView: View {
         }
       }
     }
-    }
   }
 }
 struct VideoCard: View {
@@ -471,17 +468,14 @@ struct VideoCard: View {
   var showsViews = true
   var body: some View {
     VStack(alignment: .leading, spacing: 10) {
-      Thumbnail(url: video.cover, mode: .fill).aspectRatio(16 / 9, contentMode: .fit).clipShape(
-        RoundedRectangle(cornerRadius: 12)
-      ).overlay(alignment: .bottomTrailing) {
-        Text(duration(video.duration)).font(.caption.monospacedDigit()).foregroundStyle(.white)
-          .padding(.horizontal, 7).padding(.vertical, 4).background(
-            .black.opacity(0.72), in: Capsule()
-          ).padding(8)
-      }
+      Thumbnail(url: video.cover, mode: .fill).aspectRatio(16 / 9, contentMode: .fit)
+        .clipShape(RoundedRectangle(cornerRadius: 12)).overlay(alignment: .bottomTrailing) {
+          Text(duration(video.duration)).font(.caption.monospacedDigit()).foregroundStyle(.white)
+            .padding(EdgeInsets(top: 4, leading: 7, bottom: 4, trailing: 7))
+            .background(.black.opacity(0.72), in: Capsule()).padding(8)
+        }
       Text(video.title).font(.system(size: 14, weight: .medium)).lineLimit(2)
-        .multilineTextAlignment(.leading).frame(height: 38, alignment: .topLeading).foregroundStyle(
-          .primary)
+        .frame(height: 38, alignment: .topLeading).foregroundStyle(.primary)
       HStack(spacing: 6) {
         Text(video.author).lineLimit(1)
         Spacer(minLength: 2)
@@ -492,7 +486,7 @@ struct VideoCard: View {
             ? String(format: "%.1f万", Double(video.views) / 10000) : "\(video.views)")
         }
       }.font(.caption).foregroundStyle(.secondary)
-    }.padding(12).floatingGlass(22).contentShape(RoundedRectangle(cornerRadius: 22)).cardHover()
+    }.padding(12).cardSurface(22).contentShape(RoundedRectangle(cornerRadius: 22)).cardHover()
   }
   private func duration(_ t: Int) -> String {
     t >= 3600
@@ -504,30 +498,36 @@ struct Thumbnail: View {
   let url: String
   let mode: ContentMode
   var placeholder = "play.rectangle"
-  @State private var image: NSImage?
+  @State private var loaded: (url: String, image: CGImage)?
+  @State private var pixels = 0
   @Environment(\.displayScale) private var displayScale
   var body: some View {
-    GeometryReader { g in
-      Group {
-        if let image {
-          Image(nsImage: image).resizable().aspectRatio(contentMode: mode)
-        } else {
-          Rectangle().fill(.quaternary).overlay {
-            Image(systemName: placeholder).font(.title).foregroundStyle(.tertiary)
-          }
+    let target = Self.target(url)
+    // Lazy grids drop a cell's state once it scrolls away; reading the memory
+    // cache here lets a returning cell paint its cover on the first frame.
+    let image = loaded?.url == url ? loaded?.image : target.flatMap { ThumbnailCache.shared.cached($0, maxPixelSize: 0) }
+    Color.clear.overlay {
+      if let image {
+        Image(decorative: image, scale: 1).resizable().aspectRatio(contentMode: mode)
+      } else {
+        Rectangle().fill(.quaternary).overlay {
+          Image(systemName: placeholder).font(.title).foregroundStyle(.tertiary)
         }
-      }.frame(width: g.size.width, height: g.size.height).clipped()
-      .task(id: "\(url)|\(ThumbnailCache.pixelSize(Int(max(g.size.width, g.size.height) * displayScale)))") {
-      image = nil
-      let value =
-        url.hasPrefix("//")
-        ? "https:" + url : url.replacingOccurrences(of: "http://", with: "https://")
-      guard let target = URL(string: value),
-        let decoded = try? await ThumbnailCache.shared.thumbnail(target, maxPixelSize: Int(max(g.size.width, g.size.height) * displayScale)), !Task.isCancelled
+      }
+    }.clipped()
+    .onGeometryChange(for: Int.self) {
+      ThumbnailCache.pixelSize(Int(max($0.size.width, $0.size.height) * displayScale))
+    } action: { pixels = $0 }
+    .task(id: "\(url)|\(pixels)") {
+      guard pixels > 0, let target else { return }
+      if let hit = ThumbnailCache.shared.cached(target, maxPixelSize: pixels) { loaded = (url, hit); return }
+      guard let decoded = try? await ThumbnailCache.shared.thumbnail(target, maxPixelSize: pixels), !Task.isCancelled
       else { return }
-      image = NSImage(cgImage: decoded, size: .zero)
+      loaded = (url, decoded)
     }
-    }.onDisappear { image = nil }
+  }
+  private static func target(_ url: String) -> URL? {
+    URL(string: url.hasPrefix("//") ? "https:" + url : url.replacingOccurrences(of: "http://", with: "https://"))
   }
 }
 struct ErrorBanner: View {
@@ -557,7 +557,7 @@ struct PlayerPage: View {
           SubtitleOverlay(extras: store.extras, playback: p)
         }.background(.black).clipShape(RoundedRectangle(cornerRadius: 16))
           .overlay(alignment: .top) {
-            if p.isBoosting { Label(p.boostLabel, systemImage: "forward.fill").font(.callout).padding(10).glassEffect(.regular, in: .capsule).padding(16).colorScheme(.dark).allowsHitTesting(false) }
+            if p.isBoosting { Label(p.boostLabel, systemImage: "forward.fill").font(.callout).padding(10).blurPanel(Capsule()).padding(16).colorScheme(.dark).allowsHitTesting(false) }
           }
           .overlay { PlaybackDetailsOverlay(playback: p) }
         PlayerControls(playback: p, toggleFullscreen: { store.fullscreen.open(store: store) }, extras: store.extras)
@@ -623,7 +623,7 @@ struct PlayerPage: View {
               Label("下载", systemImage: "arrow.down").foregroundStyle(.primary)
             }.tint(.primary).disabled(p.loading)
           }
-        }.buttonStyle(.glass).controlSize(.regular)
+        }.buttonStyle(.panel).controlSize(.regular)
         if let d = p.detail {
           HStack {
             Text(d.video.title).font(.title2.weight(.semibold)).textSelection(.enabled)
@@ -661,7 +661,7 @@ struct PlayerPage: View {
                       Image(systemName: "waveform").foregroundStyle(biliPink)
                     }
                   }.padding(10).frame(maxWidth: .infinity, alignment: .leading)
-                }.buttonStyle(.glass).disabled(p.loading)
+                }.buttonStyle(.panel).disabled(p.loading)
               }
             }
           }
@@ -699,7 +699,7 @@ struct LoginSheet: View {
           store.showLogin = false
         } label: {
           Image(systemName: "xmark")
-        }.buttonStyle(.glass).help("关闭")
+        }.buttonStyle(.panel).help("关闭")
       }
       ZStack {
         RoundedRectangle(cornerRadius: 16).fill(.white)
@@ -708,7 +708,7 @@ struct LoginSheet: View {
             store.loginExpired ? 0.15 : 1)
         }
         if store.qrImage == nil && !store.loginExpired { ProgressView() }
-        if store.loginExpired { Button("刷新二维码") { store.refreshQR() }.buttonStyle(.glassProminent) }
+        if store.loginExpired { Button("刷新二维码") { store.refreshQR() }.buttonStyle(.panel) }
       }.frame(width: 230, height: 230)
       Text(store.loginStatus).font(.callout).foregroundStyle(.secondary)
       Text("一次扫码即可使用浏览、收藏与投币。登录不会自动投币。")

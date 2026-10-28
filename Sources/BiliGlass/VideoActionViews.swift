@@ -18,18 +18,16 @@ struct VideoActionBar: View {
   private var disabled: Bool { detail.aid <= 0 || model.operation != nil || (store.account != nil && (model.loading || model.relation == nil)) }
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
-      GlassEffectContainer(spacing: 10) {
-        HStack(spacing: 10) {
-          action(title: model.relation?.liked == true ? "已点赞" : "点赞", icon: model.relation?.liked == true ? "hand.thumbsup.fill" : "hand.thumbsup",
-                 count: model.counts.likes, active: model.relation?.liked == true, busy: model.operation == "like", holdToTriple: true) {
-            authenticated { Task { await model.toggleLike(api: store.api) } }
-          }.disabled(disabled).help("点击点赞，按住 1.2 秒完成三连")
-          action(title: (model.relation?.coins ?? 0) > 0 ? "已投 \(model.relation!.coins) 枚" : "投币", icon: "c.circle",
-                 count: model.counts.coins, active: (model.relation?.coins ?? 0) > 0) { authenticated { sheet = .coin } }.disabled(disabled)
-          action(title: model.relation?.favorited == true ? "已收藏" : "收藏", icon: model.relation?.favorited == true ? "star.fill" : "star",
-                 count: model.counts.favorites, active: model.relation?.favorited == true) { authenticated { sheet = .favorite } }.disabled(disabled)
-          action(title: "分享", icon: "square.and.arrow.up", count: model.counts.shares) { sheet = .share }
-        }
+      HStack(spacing: 10) {
+        action(title: model.relation?.liked == true ? "已点赞" : "点赞", icon: model.relation?.liked == true ? "hand.thumbsup.fill" : "hand.thumbsup",
+               count: model.counts.likes, active: model.relation?.liked == true, busy: model.operation == "like", holdToTriple: true) {
+          authenticated { Task { await model.toggleLike(api: store.api) } }
+        }.disabled(disabled).help("点击点赞，按住 1.2 秒完成三连")
+        action(title: (model.relation?.coins ?? 0) > 0 ? "已投 \(model.relation!.coins) 枚" : "投币", icon: "c.circle",
+               count: model.counts.coins, active: (model.relation?.coins ?? 0) > 0) { authenticated { sheet = .coin } }.disabled(disabled)
+        action(title: model.relation?.favorited == true ? "已收藏" : "收藏", icon: model.relation?.favorited == true ? "star.fill" : "star",
+               count: model.counts.favorites, active: model.relation?.favorited == true) { authenticated { sheet = .favorite } }.disabled(disabled)
+        action(title: "分享", icon: "square.and.arrow.up", count: model.counts.shares) { sheet = .share }
       }
       HStack(spacing: 12) {
         Button { authenticated { Task { await store.addLater(detail.aid) } } } label: { Label("稍后再看", systemImage: "text.badge.plus") }
@@ -45,14 +43,14 @@ struct VideoActionBar: View {
         Spacer(minLength: 4)
         Toggle("弹幕", isOn: $store.danmaku.enabled).toggleStyle(.switch).fixedSize()
           .onChange(of: store.danmaku.enabled) { UserDefaults.standard.set(store.danmaku.enabled, forKey: "danmakuEnabled") }
-      }.buttonStyle(.glass)
+      }.buttonStyle(.panel)
       if let error = model.error {
         HStack {
           Label(error, systemImage: "exclamationmark.circle").font(.callout).foregroundStyle(.secondary)
           if model.needsVerification {
             Button("重新登录") { store.login() }
           }
-        }.buttonStyle(.glass)
+        }.buttonStyle(.panel)
       }
     }.task(id: identity) { await refresh() }
       .onChange(of: identity) { sheet = nil; tripleProgress = 0 }
@@ -87,7 +85,7 @@ struct VideoActionBar: View {
         Spacer(minLength: 0)
       }.padding(.horizontal, 8).padding(.vertical, 5).frame(maxWidth: .infinity, minHeight: 40).contentShape(.rect(cornerRadius: 18))
     }.foregroundStyle(.primary).tint(.primary)
-      .glassEffect(.regular.tint(active ? biliPink.opacity(0.22) : .clear).interactive(), in: .rect(cornerRadius: 18))
+      .appGlass(18, tint: active ? biliPink.opacity(0.22) : .clear)
       .overlay {
         if icon != "square.and.arrow.up" && tripleProgress > 0 {
           RoundedRectangle(cornerRadius: 18).trim(from: 0, to: tripleProgress)
@@ -200,7 +198,7 @@ struct CoinSheet: View {
                 .frame(maxWidth: .infinity).padding(.vertical, 14)
                 .contentShape(.rect(cornerRadius: 18))
             }.buttonStyle(.plain).foregroundStyle(.primary)
-              .glassEffect(.regular.tint(amount == value ? biliPink.opacity(0.24) : .clear).interactive(), in: .rect(cornerRadius: 18))
+              .appGlass(18, tint: amount == value ? biliPink.opacity(0.24) : .clear)
               .overlay { RoundedRectangle(cornerRadius: 18).strokeBorder(amount == value ? biliPink.opacity(0.8) : .clear, lineWidth: 1.5).allowsHitTesting(false) }
               .accessibilityAddTraits(amount == value ? .isSelected : [])
               .opacity(value > available ? 0.45 : 1)
@@ -238,9 +236,9 @@ struct CoinSheet: View {
           Task {
             if await model.sendCoins(amount: amount, limit: limit, balance: balance ?? 0, alsoLike: alsoLike, api: store.api) { dismiss() }
           }
-        }.buttonStyle(.glassProminent).disabled(busy || model.relation == nil || amount > available || balance == nil)
+        }.buttonStyle(.panel).disabled(busy || model.relation == nil || amount > available || balance == nil)
       }
-    }.buttonStyle(.glass).padding(24).frame(width: 440).background { GlassBackdrop() }.tint(biliPink)
+    }.buttonStyle(.panel).padding(24).frame(width: 440).background { GlassBackdrop() }.tint(biliPink)
       .animation(reduceMotion ? nil : .easeInOut(duration: 0.16), value: amount)
       .interactiveDismissDisabled(model.operation != nil)
       .task { await prepare() }
@@ -289,9 +287,9 @@ struct TripleSheet: View {
         Spacer()
         Button(model.operation == "triple" ? "提交中…" : "确认三连") {
           Task { if await model.sendTriple(api: store.api) { dismiss() } }
-        }.buttonStyle(.glassProminent).disabled(busy || model.relation == nil)
+        }.buttonStyle(.panel).disabled(busy || model.relation == nil)
       }
-    }.buttonStyle(.glass).padding(24).frame(width: 440).background { GlassBackdrop() }.tint(biliPink)
+    }.buttonStyle(.panel).padding(24).frame(width: 440).background { GlassBackdrop() }.tint(biliPink)
       .interactiveDismissDisabled(busy)
       .task { await refresh() }
   }
@@ -333,7 +331,7 @@ struct FavoriteSheet: View {
                   Spacer()
                   Text("\(folder.count)").font(.caption.monospacedDigit()).foregroundStyle(.secondary)
                 }.padding(14).frame(maxWidth: .infinity).contentShape(.rect(cornerRadius: 16))
-              }.buttonStyle(.plain).floatingGlass(16).disabled(editor.saving || !editor.loaded)
+              }.buttonStyle(.plain).cardSurface(16).disabled(editor.saving || !editor.loaded)
                 .accessibilityAddTraits(editor.selected.contains(folder.id) ? .isSelected : [])
             }
           }.padding(4)
@@ -365,9 +363,9 @@ struct FavoriteSheet: View {
               dismiss()
             }
           }
-        }.buttonStyle(.glassProminent).disabled(editor.loading || editor.saving || !editor.loaded)
+        }.buttonStyle(.panel).disabled(editor.loading || editor.saving || !editor.loaded)
       }
-    }.buttonStyle(.glass).padding(24).frame(width: 500).background { GlassBackdrop() }.tint(biliPink)
+    }.buttonStyle(.panel).padding(24).frame(width: 500).background { GlassBackdrop() }.tint(biliPink)
       .interactiveDismissDisabled(editor.saving)
       .task { await editor.load(api: store.api) }
       .sheet(isPresented: $verify, onDismiss: { Task { await editor.load(api: store.api) } }) { InteractionVerification(store: store, detail: detail) }
@@ -407,7 +405,7 @@ struct VideoShareSheet: View {
         ShareLink(item: url, subject: Text(detail.video.title), message: Text(detail.video.title)) { Label("系统分享", systemImage: "square.and.arrow.up") }
       }
       if let copied { Text(copied).font(.caption).foregroundStyle(.secondary) }
-    }.buttonStyle(.glass).padding(24).frame(width: 560).background { GlassBackdrop() }.tint(biliPink)
+    }.buttonStyle(.panel).padding(24).frame(width: 560).background { GlassBackdrop() }.tint(biliPink)
       .onAppear { captureTime() }.onChange(of: url) { copied = nil }
   }
   private var timestamp: String { let value = Int(max(0,seconds)); return String(format: "%d:%02d",value/60,value%60) }

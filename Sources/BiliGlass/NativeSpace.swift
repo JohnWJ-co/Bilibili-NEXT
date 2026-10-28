@@ -101,12 +101,12 @@ struct NativeDynamicsPage: View {
         HStack {
           Text(mid == nil ? "关注动态" : "动态").font(.title2.bold())
           Spacer()
-          Button("发布动态") { composing = true }.buttonStyle(.glass).disabled(store.account == nil)
+          Button("发布动态") { composing = true }.buttonStyle(.panel).disabled(store.account == nil)
           Button {
             Task { await load(reset: true) }
           } label: {
             Image(systemName: "arrow.clockwise")
-          }.buttonStyle(.glass).disabled(loading).help("刷新动态")
+          }.buttonStyle(.panel).disabled(loading).help("刷新动态")
         }.padding(16).floatingGlass(22).contentShape(.rect(cornerRadius: 22))
         if let error { ErrorBanner(text: error) { Task { await load(reset: true) } } }
         ForEach(items) { item in
@@ -188,7 +188,7 @@ struct DynamicContent: View {
       }
       if !entry.original.isEmpty {
         Text(entry.original).font(.callout).foregroundStyle(.secondary).textSelection(.enabled)
-          .padding(14).appGlass(14)
+          .padding(14).cardSurface(14)
       }
       if let video = entry.video {
         Button {
@@ -200,7 +200,7 @@ struct DynamicContent: View {
             Text(video.title).font(.headline).lineLimit(3).multilineTextAlignment(.leading)
             Spacer(minLength: 0)
             Image(systemName: "play.circle.fill").font(.title)
-          }.padding(12).appGlass(18).contentShape(.rect(cornerRadius: 18))
+          }.padding(12).cardSurface(18).contentShape(.rect(cornerRadius: 18))
         }.buttonStyle(.plain)
       }
       if !entry.pictures.isEmpty {
@@ -226,7 +226,7 @@ struct NativeDynamicDetail: View {
       HStack {
         Text("动态").font(.headline)
         Spacer()
-        Button("完成") { dismiss() }.buttonStyle(.glass)
+        Button("完成") { dismiss() }.buttonStyle(.panel)
       }.padding(16)
       ScrollView {
         VStack(alignment: .leading, spacing: 22) {
@@ -270,13 +270,13 @@ struct NativeRelationsPage: View {
               }
               Spacer()
               Image(systemName: "chevron.right").foregroundStyle(.secondary)
-            }.padding(18).floatingGlass(22).contentShape(Rectangle())
+            }.padding(18).cardSurface(22).contentShape(Rectangle())
           }.buttonStyle(.plain)
         }
         if loading {
           ProgressView().frame(maxWidth: .infinity)
         } else if hasMore {
-          Button("加载更多") { Task { await load() } }.buttonStyle(.glass).frame(maxWidth: .infinity)
+          Button("加载更多") { Task { await load() } }.buttonStyle(.panel).frame(maxWidth: .infinity)
         }
       }.padding(AppLayout.pageInset)
     }.task { await load() }
@@ -341,7 +341,7 @@ struct NativeCollectionsPage: View {
               }
               Spacer()
               Image(systemName: "chevron.right").foregroundStyle(.secondary)
-            }.padding(16).floatingGlass(22).contentShape(.rect(cornerRadius: 22))
+            }.padding(16).cardSurface(22).contentShape(.rect(cornerRadius: 22))
           }.buttonStyle(.plain)
         }
         if loading {
@@ -349,7 +349,7 @@ struct NativeCollectionsPage: View {
         } else if rows.isEmpty && error == nil {
           ContentUnavailableView("暂无合集", systemImage: "square.stack").frame(maxWidth: .infinity)
         } else if hasMore {
-          Button("加载更多") { Task { await load() } }.buttonStyle(.glass).frame(maxWidth: .infinity)
+          Button("加载更多") { Task { await load() } }.buttonStyle(.panel).frame(maxWidth: .infinity)
         }
       }.padding(AppLayout.pageInset)
     }.task { await load() }.sheet(item: $selected) { collection in
@@ -402,7 +402,7 @@ struct NativeCollectionVideos: View {
       HStack {
         Text(collection.title).font(.title2.bold())
         Spacer()
-        Button("完成") { dismiss() }.buttonStyle(.glass)
+        Button("完成") { dismiss() }.buttonStyle(.panel)
       }.padding(20)
       ScrollView {
         LazyVStack(spacing: 20) {
@@ -421,10 +421,10 @@ struct NativeCollectionVideos: View {
           if loading {
             ProgressView()
           } else if hasMore {
-            Button("加载更多") { Task { await load() } }.buttonStyle(.glass)
+            Button("加载更多") { Task { await load() } }.buttonStyle(.panel)
           }
         }.padding(20)
-      }
+      }.pausesCardHoverWhileScrolling()
     }.frame(minWidth: 850, minHeight: 650).background { GlassBackdrop() }.task { await load() }
       .onChange(of: store.navigationRevision) { dismiss() }
   }
@@ -483,10 +483,10 @@ struct NativeAccountPage: View {
           LabeledContent("硬币", value: (details["money"] as? Double ?? 0).formatted())
           LabeledContent("大会员", value: (details["vipStatus"] as? Int ?? 0) == 1 ? "已开通" : "未开通")
         }
-        SettingsLink { Label("应用设置", systemImage: "gearshape") }.buttonStyle(.glass)
+        SettingsLink { Label("应用设置", systemImage: "gearshape") }.buttonStyle(.panel)
         Link("管理哔哩哔哩账户", destination: URL(string: "https://account.bilibili.com/account/home")!)
           .font(.callout)
-        Button("退出登录", role: .destructive) { store.logout() }.buttonStyle(.glass)
+        Button("退出登录", role: .destructive) { store.logout() }.buttonStyle(.panel)
       }
       Spacer(minLength: 0)
     }.padding(24).floatingGlass(24).task {

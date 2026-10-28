@@ -22,21 +22,86 @@ struct NavigationButtonStyle: ButtonStyle {
 
 extension View {
   func floatingGlass(_ radius: CGFloat = 22) -> some View { appGlass(radius, tint: .primary.opacity(0.035)) }
-  func appGlass(_ radius: CGFloat = 14, tint: Color = .clear, interactive: Bool = false) -> some View {
-    modifier(GlassSurface(radius: radius, tint: tint, interactive: interactive))
+  func appGlass(_ radius: CGFloat = 14, tint: Color = .clear) -> some View {
+    blurPanel(RoundedRectangle(cornerRadius: radius), tint: tint)
+  }
+  func blurPanel<S: InsettableShape>(_ shape: S, tint: Color = .clear) -> some View {
+    modifier(BlurSurface(shape: shape, tint: tint))
   }
   func appAppearance() -> some View { modifier(AppAppearance()) }
+  func cardSurface(_ radius: CGFloat = 22, tint: Color = .clear) -> some View {
+    modifier(CardSurface(radius: radius, tint: tint))
+  }
   func cardHover() -> some View { modifier(CardHover()) }
+  func pausesCardHoverWhileScrolling() -> some View { modifier(ScrollHoverPause()) }
 }
-private struct GlassSurface: ViewModifier {
+extension EnvironmentValues {
+  /// Set while the enclosing scroll view moves, so cards sliding under a still pointer don't animate.
+  @Entry var cardHoverSuspended = false
+}
+private func panelEdge(_ scheme: ColorScheme) -> Color {
+  scheme == .dark ? .white.opacity(0.08) : .black.opacity(0.06)
+}
+/// Plain Gaussian blur for fixed panels. Liquid Glass layers refraction,
+/// specular highlights and shape morphing on top, re-rendered as content moves.
+private struct BlurSurface<S: InsettableShape>: ViewModifier {
+  let shape: S
+  let tint: Color
+  @AppStorage("glassStyle") private var style = "clear"
+  @Environment(\.colorScheme) private var scheme
+  func body(content: Content) -> some View {
+    content.background {
+      ZStack {
+        shape.fill(style == "clear" ? Material.ultraThin : Material.regular)
+        if tint != .clear { shape.fill(tint) }
+        shape.strokeBorder(panelEdge(scheme), lineWidth: 1)
+      }
+    }
+  }
+}
+/// Static fill for rows and cards in long scrolling lists: any backdrop blur
+/// re-samples behind every visible row on every scrolled frame.
+private struct CardSurface: ViewModifier {
   let radius: CGFloat
   let tint: Color
-  let interactive: Bool
-  @AppStorage("glassStyle") private var style = "clear"
-  @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+  @Environment(\.colorScheme) private var scheme
   func body(content: Content) -> some View {
-    content.glassEffect((style == "clear" && !reduceTransparency ? Glass.clear : Glass.regular)
-      .tint(tint).interactive(interactive), in: .rect(cornerRadius: radius))
+    content.background {
+      let shape = RoundedRectangle(cornerRadius: radius)
+      ZStack {
+        shape.fill(scheme == .dark ? Color(white: 0.2).opacity(0.45) : Color.white.opacity(0.55))
+        if tint != .clear { shape.fill(tint) }
+        shape.strokeBorder(panelEdge(scheme), lineWidth: 1)
+      }
+    }
+  }
+}
+/// Replaces the system glass buttons: a solid tinted fill, no backdrop sampling.
+struct PanelButtonStyle: ButtonStyle {
+  var neutral = false
+  @Environment(\.isEnabled) private var isEnabled
+  @Environment(\.controlSize) private var controlSize
+  func makeBody(configuration: Configuration) -> some View {
+    let small = controlSize == .small || controlSize == .mini
+    configuration.label
+      .foregroundStyle(neutral ? AnyShapeStyle(.background) : AnyShapeStyle(.white))
+      .padding(.horizontal, small ? 8 : 10).padding(.vertical, small ? 3 : 4)
+      .frame(minHeight: small ? 20 : 24)
+      .background(neutral ? AnyShapeStyle(.primary.opacity(0.85)) : AnyShapeStyle(.tint),
+        in: .rect(cornerRadius: small ? 5 : 6))
+      .contentShape(.rect(cornerRadius: 6))
+      .opacity(isEnabled ? (configuration.isPressed ? 0.72 : 1) : 0.4)
+  }
+}
+extension ButtonStyle where Self == PanelButtonStyle {
+  static var panel: PanelButtonStyle { PanelButtonStyle() }
+  static var panelNeutral: PanelButtonStyle { PanelButtonStyle(neutral: true) }
+}
+private struct ScrollHoverPause: ViewModifier {
+  @State private var scrolling = false
+  func body(content: Content) -> some View {
+    content.environment(\.cardHoverSuspended, scrolling)
+      .onScrollPhaseChange { _, phase in scrolling = phase.isScrolling }
   }
 }
 private struct AppAppearance: ViewModifier {
@@ -49,10 +114,15 @@ private struct CardHover: ViewModifier {
   @State private var hovering = false
   @AppStorage("interfaceAnimations") private var animations = true
   @Environment(\.accessibilityReduceMotion) private var reduceMotion
+  @Environment(\.cardHoverSuspended) private var suspended
   func body(content: Content) -> some View {
-    content.scaleEffect(hovering && animations && !reduceMotion ? 1.012 : 1)
-      .animation(animations && !reduceMotion ? .smooth(duration: 0.18) : nil, value: hovering)
+    let lifted = hovering && !suspended && animations && !reduceMotion
+    // Hit testing off while scrolling keeps the hover dispatcher from walking
+    // every card the content slides under the pointer.
+    content.scaleEffect(lifted ? 1.012 : 1)
+      .animation(animations && !reduceMotion ? .smooth(duration: 0.18) : nil, value: lifted)
       .onHover { hovering = $0 }
+      .allowsHitTesting(!suspended)
   }
 }
 struct GlassBackdrop: View {

@@ -52,16 +52,14 @@ struct PreferencesView: View {
       HStack(alignment: .top, spacing: 20) {
         VStack(alignment: .leading, spacing: 20) {
           Label("设置", systemImage: "slider.horizontal.3").font(.title2.weight(.semibold)).padding(.horizontal, 10)
-          GlassEffectContainer(spacing: 8) {
-            VStack(spacing: 8) {
-              ForEach(categories.indices, id: \.self) { index in
-                Button { store.preferencesTab = index } label: {
-                  Label(categories[index].0, systemImage: categories[index].1)
-                    .font(.body.weight(store.preferencesTab == index ? .semibold : .regular))
-                    .frame(maxWidth: .infinity, alignment: .leading).padding(12).contentShape(.rect(cornerRadius: 14))
-                }.buttonStyle(NavigationButtonStyle()).tint(.primary)
-                  .appGlass(14, tint: store.preferencesTab == index ? biliPink.opacity(0.2) : .clear)
-              }
+          VStack(spacing: 8) {
+            ForEach(categories.indices, id: \.self) { index in
+              Button { store.preferencesTab = index } label: {
+                Label(categories[index].0, systemImage: categories[index].1)
+                  .font(.body.weight(store.preferencesTab == index ? .semibold : .regular))
+                  .frame(maxWidth: .infinity, alignment: .leading).padding(12).contentShape(.rect(cornerRadius: 14))
+              }.buttonStyle(NavigationButtonStyle()).tint(.primary)
+                .appGlass(14, tint: store.preferencesTab == index ? biliPink.opacity(0.2) : .clear)
             }
           }
           Spacer()
@@ -70,18 +68,16 @@ struct PreferencesView: View {
         VStack(alignment: .leading, spacing: 16) {
           Text(categories[store.preferencesTab].0).font(.title2.weight(.semibold)).padding(.horizontal, 6).padding(.top, 4)
           ScrollView {
-            GlassEffectContainer(spacing: 16) {
-              VStack(alignment: .leading, spacing: 16) {
-                switch store.preferencesTab {
-                case 0: appearanceSettings
-                case 1: playbackSettings
-                case 2: danmakuSettings
-                case 3: cacheSettings
-                default: aboutSettings
-                }
-              }.padding(AppLayout.pageInset).id(store.preferencesTab).transition(.opacity)
-                .animation(reduceMotion || !animations ? nil : .smooth(duration: 0.22), value: store.preferencesTab)
-            }
+            VStack(alignment: .leading, spacing: 16) {
+              switch store.preferencesTab {
+              case 0: appearanceSettings
+              case 1: playbackSettings
+              case 2: danmakuSettings
+              case 3: cacheSettings
+              default: aboutSettings
+              }
+            }.padding(AppLayout.pageInset).id(store.preferencesTab).transition(.opacity)
+              .animation(reduceMotion || !animations ? nil : .smooth(duration: 0.22), value: store.preferencesTab)
           }.scrollIndicators(.hidden).clipShape(.rect(cornerRadius: 24))
         }.frame(maxWidth: .infinity, maxHeight: .infinity)
       }.padding(24)
@@ -160,7 +156,7 @@ struct PreferencesView: View {
           Spacer()
           Button(importing ? "正在处理…" : "选择图片…", action: chooseBackground).disabled(importing)
           if !backgroundImage.isEmpty { Button("恢复默认") { backgroundImage = "" } }
-        }.buttonStyle(.glass).tint(.primary)
+        }.buttonStyle(.panelNeutral)
         toggleRow("模糊背景图片", value: $backgroundBlur).disabled(backgroundImage.isEmpty)
         sliderRow("背景可见度", value: $backgroundOpacity, range: 0.2...1, step: 0.05, display: "\(Int(backgroundOpacity * 100))%")
           .disabled(backgroundImage.isEmpty)
@@ -243,7 +239,7 @@ struct PreferencesView: View {
               at: AppPaths.cache, withIntermediateDirectories: true)
             NSWorkspace.shared.open(AppPaths.cache)
           }
-        }.buttonStyle(.glass).tint(.primary)
+        }.buttonStyle(.panelNeutral)
         Text("修改目录后，新缓存保存到新位置，已有缓存仍可在下载页管理。").font(.caption).foregroundStyle(.secondary)
       }
       section("图片缓存") {
@@ -252,7 +248,7 @@ struct PreferencesView: View {
             await ThumbnailCache.shared.clear()
             cleared = true
           }
-        }.buttonStyle(.glass).tint(.primary)
+        }.buttonStyle(.panelNeutral)
         Text("解码图片缓存上限 32 MB，按显示尺寸加载；原图仅使用 128 MB 磁盘缓存。正在显示的图片另占内存。").font(.caption).foregroundStyle(.secondary)
       }
     }

@@ -7,6 +7,10 @@ extension View {
     padding(12).background(.regularMaterial, in: .rect(cornerRadius: radius))
   }
 }
+/// Shared sources name the macOS panel button; iOS keeps the system glass button.
+extension PrimitiveButtonStyle where Self == GlassButtonStyle {
+  static var panel: GlassButtonStyle { .glass }
+}
 struct Thumbnail: View {
   let url: String
   var mode: ContentMode = .fill

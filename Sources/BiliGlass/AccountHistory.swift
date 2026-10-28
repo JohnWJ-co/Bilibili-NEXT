@@ -129,21 +129,19 @@ struct HistoryPage: View {
             } else if let error = store.historySync.error {
               Text(error + "。本机记录已保留。").font(.caption).foregroundStyle(.secondary)
             }
-            GlassEffectContainer(spacing: 0) {
-              LazyVGrid(columns: [GridItem(.adaptive(minimum: 240, maximum: 390), spacing: 18)], spacing: 20) {
-                ForEach(combined) { entry in
-                  Button { store.openHistory(entry) } label: {
-                    VStack(alignment: .leading, spacing: 8) {
-                      VideoCard(video: entry.video, showsViews: false)
-                      HStack {
-                        Text(entry.viewedAt.formatted(AppDateFormat.timestamp))
-                        if entry.isLocal { Text("本机").font(.caption2) }
-                        Spacer()
-                        Text(entry.progress < 0 ? "已看完" : "看到 \(String(format: "%d:%02d", max(0, entry.progress) / 60, max(0, entry.progress) % 60))")
-                      }.font(.caption).foregroundStyle(.secondary).padding(.horizontal, 12)
-                    }.contentShape(.rect(cornerRadius: 22))
-                  }.buttonStyle(.plain)
-                }
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: 240, maximum: 390), spacing: 18)], spacing: 20) {
+              ForEach(combined) { entry in
+                Button { store.openHistory(entry) } label: {
+                  VStack(alignment: .leading, spacing: 8) {
+                    VideoCard(video: entry.video, showsViews: false)
+                    HStack {
+                      Text(entry.viewedAt.formatted(AppDateFormat.timestamp))
+                      if entry.isLocal { Text("本机").font(.caption2) }
+                      Spacer()
+                      Text(entry.progress < 0 ? "已看完" : "看到 \(String(format: "%d:%02d", max(0, entry.progress) / 60, max(0, entry.progress) % 60))")
+                    }.font(.caption).foregroundStyle(.secondary).padding(.horizontal, 12)
+                  }.contentShape(.rect(cornerRadius: 22))
+                }.buttonStyle(.plain)
               }
             }
             if combined.isEmpty && !store.accountHistory.loading && store.accountHistory.error == nil {
@@ -157,16 +155,14 @@ struct HistoryPage: View {
         } else {
           Text("仅保存在这台 Mac 上的播放记录").font(.callout).foregroundStyle(.secondary)
           if store.history.isEmpty { ContentUnavailableView("还没有本机记录", systemImage: "clock") }
-          GlassEffectContainer(spacing: 0) {
-            LazyVGrid(columns: [GridItem(.adaptive(minimum: 240, maximum: 390), spacing: 18)], spacing: 20) {
-              ForEach(store.history) { entry in
-                Button { store.open(entry.video.bvid) } label: { VideoCard(video: entry.video) }.buttonStyle(.plain)
-              }
+          LazyVGrid(columns: [GridItem(.adaptive(minimum: 240, maximum: 390), spacing: 18)], spacing: 20) {
+            ForEach(store.history) { entry in
+              Button { store.open(entry.video.bvid) } label: { VideoCard(video: entry.video) }.buttonStyle(.plain)
             }
           }
         }
       }.padding(AppLayout.pageInset)
-    }.task(id: source + "\(store.account?.mid ?? 0)") {
+    }.pausesCardHoverWhileScrolling().task(id: source + "\(store.account?.mid ?? 0)") {
       if source == "account" { await store.accountHistory.loadIfNeeded(api: store.api) }
     }
   }

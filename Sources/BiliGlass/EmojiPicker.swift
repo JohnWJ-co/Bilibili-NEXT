@@ -29,7 +29,7 @@ struct EmojiPicker: View {
     #if os(iOS)
     .buttonStyle(.plain)
     #else
-    .buttonStyle(.glass)
+    .buttonStyle(.panel)
     #endif
     .help("表情").accessibilityLabel("表情")
       .popover(isPresented: $showing) {
