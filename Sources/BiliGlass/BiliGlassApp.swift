@@ -42,7 +42,7 @@ final class AppLifecycle: NSObject, NSApplicationDelegate {
             .keyboardShortcut("f", modifiers: [.command, .control]).disabled(!store.showPlayer)
           Button("刷新") {
             if store.showPlayer { store.playback.retry(api: store.api) } else { store.reload() }
-          }.keyboardShortcut("r")
+          }
         }
       }
     Settings { PreferencesView(store: store) }

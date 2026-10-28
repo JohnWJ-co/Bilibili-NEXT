@@ -10,9 +10,9 @@ struct RootView: View {
   var body: some View {
     ZStack {
       if !store.fullscreen.isPresented { GlassBackdrop() }
-      GeometryReader { viewport in
+      GeometryReader { _ in
       HStack(alignment: .top, spacing: 20) {
-        sidebar(compact: viewport.size.height < 820)
+        sidebar
           .frame(width: AppLayout.sidebarRailWidth)
         VStack(spacing: 16) {
           topbar
@@ -158,23 +158,20 @@ struct RootView: View {
       if !store.showPlayer { searchFocused = false; NSApp.keyWindow?.makeFirstResponder(nil) }
     }
   }
-  private func sidebar(compact: Bool) -> some View {
-    VStack(spacing: compact ? 14 : 20) {
-      // Logo and navigation share one panel, so the rail reads as a single
-      // floating column instead of three stacked cards.
-      VStack(spacing: 0) {
-        Image(systemName: "play.rectangle.fill").font(.title2).foregroundStyle(biliPink)
-          .frame(maxWidth: .infinity).frame(height: AppLayout.toolbarHeight)
-          .accessibilityLabel("Bilibili NEXT")
-        Divider().opacity(0.5).padding(.horizontal, 12)
-        navigationRail(items: [.recommend, .popular, .regions, .dynamic, .messages])
-        navigationRail(items: [.history, .favorites, .later, .downloads, .profile, .web])
-      }
-      .floatingGlass(AppLayout.panelRadius)
-      .clipShape(RoundedRectangle(cornerRadius: AppLayout.panelRadius))
-      Spacer(minLength: 0)
-      accountRail.fixedSize(horizontal: false, vertical: true)
+  private var sidebar: some View {
+    ZStack(alignment: .top) {
+      navigationPanel
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+      accountAvatar
     }.frame(maxHeight: .infinity)
+  }
+  private var navigationPanel: some View {
+    VStack(spacing: 0) {
+      navigationRail(items: [.recommend, .popular, .regions, .dynamic, .messages])
+      navigationRail(items: [.history, .favorites, .later, .downloads, .profile, .web])
+    }
+    .floatingGlass(AppLayout.panelRadius)
+    .clipShape(RoundedRectangle(cornerRadius: AppLayout.panelRadius))
   }
   private func navigationRail(items: [Destination]) -> some View {
     VStack(spacing: 4) {
@@ -212,7 +209,7 @@ struct RootView: View {
     default: d.rawValue
     }
   }
-  private var accountRail: some View {
+  private var accountAvatar: some View {
     Group {
       if let account = store.account {
         Menu {
@@ -236,7 +233,7 @@ struct RootView: View {
           Image(systemName: "person.crop.circle").font(.title2).frame(maxWidth: .infinity)
         }.buttonStyle(.plain).help("登录").accessibilityLabel("登录")
       }
-    }.frame(height: 58).floatingGlass(AppLayout.panelRadius)
+    }.frame(height: AppLayout.toolbarHeight).floatingGlass(AppLayout.panelRadius)
   }
   private var topbar: some View {
     HStack(spacing: 14) {
@@ -245,7 +242,8 @@ struct RootView: View {
           store.backFromPlayer()
         } label: {
           Image(systemName: "chevron.left")
-        }.buttonStyle(.panel).help(UserDefaults.standard.bool(forKey: "stopPlaybackOnBack") ? "返回并停止播放" : "返回，小窗口继续播放")
+        }.buttonStyle(.panel).keyboardShortcut(.leftArrow, modifiers: .command)
+          .help(UserDefaults.standard.bool(forKey: "stopPlaybackOnBack") ? "返回并停止播放（⌘←）" : "返回，小窗口继续播放（⌘←）")
       }
       HStack(spacing: 10) {
         Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
@@ -261,12 +259,11 @@ struct RootView: View {
         }
       }.padding(.horizontal, 15).frame(maxWidth: 520).frame(height: 44).appGlass(22)
       Spacer(minLength: 0)
-      SettingsLink { Image(systemName: "gearshape") }.help("设置")
       Button {
         if store.showPlayer { store.playback.retry(api: store.api) } else { store.reload() }
       } label: {
         Image(systemName: "arrow.clockwise")
-      }.help("刷新")
+      }.keyboardShortcut("r", modifiers: .command).help("刷新（⌘R）")
     }.buttonStyle(.panel).padding(.horizontal, 12).frame(height: AppLayout.toolbarHeight)
       .background { Color.clear.titleBarBehavior() }.floatingGlass(AppLayout.panelRadius)
   }
