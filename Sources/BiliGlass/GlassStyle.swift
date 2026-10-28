@@ -74,9 +74,12 @@ private struct CardSurface: ViewModifier {
     }
   }
 }
+/// 播放器工具栏返回/刷新按钮的底色，取自参考图的暖灰。
+let toolbarButtonFill = Color(red: 0.184, green: 0.176, blue: 0.173)
 /// Replaces the system glass buttons: one solid pink fill everywhere, no backdrop
 /// sampling. The fill ignores `.tint` so a neutral tint can't wash out the label.
 struct PanelButtonStyle: ButtonStyle {
+  var fill: Color = biliPink
   @Environment(\.isEnabled) private var isEnabled
   @Environment(\.controlSize) private var controlSize
   func makeBody(configuration: Configuration) -> some View {
@@ -85,13 +88,14 @@ struct PanelButtonStyle: ButtonStyle {
       .foregroundStyle(.white)
       .padding(.horizontal, small ? 8 : 10).padding(.vertical, small ? 3 : 4)
       .frame(minHeight: small ? 20 : 24)
-      .background(biliPink, in: .rect(cornerRadius: small ? 5 : 6))
+      .background(fill, in: .rect(cornerRadius: small ? 5 : 6))
       .contentShape(.rect(cornerRadius: 6))
       .opacity(isEnabled ? (configuration.isPressed ? 0.72 : 1) : 0.4)
   }
 }
 extension ButtonStyle where Self == PanelButtonStyle {
   static var panel: PanelButtonStyle { PanelButtonStyle() }
+  static var toolbarPanel: PanelButtonStyle { PanelButtonStyle(fill: toolbarButtonFill) }
 }
 private struct ScrollHoverPause: ViewModifier {
   @State private var scrolling = false

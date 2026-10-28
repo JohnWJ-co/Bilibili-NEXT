@@ -246,18 +246,18 @@ struct RootView: View {
           store.backFromPlayer()
         } label: {
           Image(systemName: "chevron.left")
-        }.buttonStyle(.panel).keyboardShortcut(.leftArrow, modifiers: .command)
+        }.buttonStyle(.toolbarPanel).keyboardShortcut(.leftArrow, modifiers: .command)
           .help(UserDefaults.standard.bool(forKey: "stopPlaybackOnBack") ? "返回并停止播放（⌘←）" : "返回，小窗口继续播放（⌘←）")
       }
       Button {
         if store.showPlayer { store.playback.retry(api: store.api) } else { store.reload() }
       } label: {
         Image(systemName: "arrow.clockwise")
-      }.keyboardShortcut("r", modifiers: .command).help("刷新（⌘R）")
+      }.buttonStyle(.toolbarPanel).keyboardShortcut("r", modifiers: .command).help("刷新（⌘R）")
     }.buttonStyle(.panel).padding(.leading, 12)
-      // The player sidebar insets its content by 20pt; match it so refresh sits
-      // flush with the 关注 button's trailing edge.
-      .padding(.trailing, store.showPlayer ? 20 : 12)
+      // Keep refresh at the player page's trailing inset on every page; the player
+      // sidebar insets its content by 20pt, so this also lines up with 关注.
+      .padding(.trailing, 20)
       .frame(height: AppLayout.toolbarHeight)
       .background { Color.clear.titleBarBehavior() }.floatingGlass(AppLayout.panelRadius)
   }
