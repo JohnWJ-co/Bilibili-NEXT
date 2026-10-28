@@ -254,7 +254,11 @@ struct RootView: View {
       } label: {
         Image(systemName: "arrow.clockwise")
       }.keyboardShortcut("r", modifiers: .command).help("刷新（⌘R）")
-    }.buttonStyle(.panel).padding(.horizontal, 12).frame(height: AppLayout.toolbarHeight)
+    }.buttonStyle(.panel).padding(.leading, 12)
+      // The player sidebar insets its content by 20pt; match it so refresh sits
+      // flush with the 关注 button's trailing edge.
+      .padding(.trailing, store.showPlayer ? 20 : 12)
+      .frame(height: AppLayout.toolbarHeight)
       .background { Color.clear.titleBarBehavior() }.floatingGlass(AppLayout.panelRadius)
   }
   private var content: some View {
