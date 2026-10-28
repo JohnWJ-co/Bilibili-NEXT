@@ -235,9 +235,8 @@ struct PlaybackResume {
     guard token == generation else { return }
     routeDiagnostics = s.diagnostics
     startupMilliseconds["playurl"] = elapsed()
-    let preferred = UserDefaults.standard.integer(forKey: "quality")
-    let qn =
-      quality ?? (s.videos.contains { $0.id == preferred } ? preferred : s.videos.first?.id ?? 0)
+    let preferred = UserDefaults.standard.integer(forKey: "defaultQuality")
+    let qn = quality ?? DefaultQuality.resolve(preferred, available: s.videos.map(\.id)) ?? 0
     requestedQuality = qn
     guard let original = API.bestVideo(s.videos, quality: qn) else {
       throw BiliError(text: "此清晰度已不可用，请重试")

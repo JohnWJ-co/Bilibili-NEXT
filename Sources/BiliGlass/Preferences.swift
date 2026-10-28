@@ -29,6 +29,7 @@ struct PreferencesView: View {
   @AppStorage("autoPlay") private var autoPlay = true
   @AppStorage("stopPlaybackOnBack") private var stopOnBack = false
   @AppStorage("videoCodecPreference") private var codec = "auto"
+  @AppStorage("defaultQuality") private var defaultQuality = 0
   @AppStorage("commentSort") private var commentSort = 1
   @State private var backgroundError: String?
   @State private var importing = false
@@ -95,6 +96,13 @@ struct PreferencesView: View {
   private var playbackSettings: some View {
     VStack(spacing: 18) {
       section("播放") {
+        Picker("默认清晰度", selection: $defaultQuality) {
+          ForEach(DefaultQuality.allCases) { quality in
+            Text(quality.title).tag(quality.rawValue)
+          }
+        }
+        Text("优先使用所选清晰度；该清晰度不可用时自动选择视频提供的最高清晰度。下次打开视频生效。")
+          .font(.caption).foregroundStyle(.secondary)
         Picker("首选编码", selection: $codec) {
           ForEach(VideoCodecPreference.allCases) { Text($0.title).tag($0.rawValue) }
         }
