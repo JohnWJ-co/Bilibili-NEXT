@@ -11,9 +11,6 @@ struct RootView: View {
     ZStack {
       if !store.fullscreen.isPresented { GlassBackdrop() }
       GeometryReader { _ in
-      HStack(alignment: .top, spacing: 20) {
-        sidebar
-          .frame(width: AppLayout.sidebarRailWidth)
         VStack(spacing: 16) {
           topbar
           if let reason = store.loginUpgradeReason, !store.loginUpgradeDismissed {
@@ -28,11 +25,10 @@ struct RootView: View {
           if searchFocused && !store.showPlayer { SearchAssistance(store: store) }
           content.frame(maxWidth: .infinity, maxHeight: .infinity).clipShape(
             RoundedRectangle(cornerRadius: 24))
-        }
-      }.padding(.horizontal, 20).padding(.bottom, 20).padding(.top, 22)
-        .opacity(store.fullscreen.isPresented ? 0 : 1)
-        .allowsHitTesting(!store.fullscreen.isPresented)
-        .accessibilityHidden(store.fullscreen.isPresented)
+        }.padding(.horizontal, 20).padding(.bottom, 20).padding(.top, 22)
+          .opacity(store.fullscreen.isPresented ? 0 : 1)
+          .allowsHitTesting(!store.fullscreen.isPresented)
+          .accessibilityHidden(store.fullscreen.isPresented)
       }
       if !store.fullscreen.isPresented {
         // The strip from the window's top edge down to the panels stands in
@@ -158,23 +154,8 @@ struct RootView: View {
       if !store.showPlayer { searchFocused = false; NSApp.keyWindow?.makeFirstResponder(nil) }
     }
   }
-  private var sidebar: some View {
-    ZStack(alignment: .top) {
-      navigationPanel
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-      accountAvatar
-    }.frame(maxHeight: .infinity)
-  }
-  private var navigationPanel: some View {
-    VStack(spacing: 0) {
-      navigationRail(items: [.recommend, .popular, .regions, .dynamic, .messages])
-      navigationRail(items: [.history, .favorites, .later, .downloads, .profile, .web])
-    }
-    .floatingGlass(AppLayout.panelRadius)
-    .clipShape(RoundedRectangle(cornerRadius: AppLayout.panelRadius))
-  }
-  private func navigationRail(items: [Destination]) -> some View {
-    VStack(spacing: 4) {
+  private func navigationButtons(_ items: [Destination]) -> some View {
+    HStack(spacing: 4) {
       ForEach(items) { d in
         Button {
           store.navigate(d)
@@ -184,15 +165,15 @@ struct RootView: View {
             .font(.system(size: 17, weight: selected ? .semibold : .regular))
             .frame(width: 20, height: 20)
             .overlay(alignment: .topTrailing) { railIndicator(d).accessibilityHidden(true) }
-            .frame(maxWidth: .infinity).frame(height: 34).contentShape(
-              RoundedRectangle(cornerRadius: 12)
+            .frame(width: 34, height: 34).contentShape(
+              RoundedRectangle(cornerRadius: 10)
             )
-            .background(selected ? biliPink.opacity(0.19) : .clear, in: .rect(cornerRadius: 12))
+            .background(selected ? biliPink.opacity(0.19) : .clear, in: .rect(cornerRadius: 10))
             .foregroundStyle(.primary)
         }.buttonStyle(NavigationButtonStyle()).tint(.primary).help(d.rawValue)
           .accessibilityLabel(railLabel(d))
       }
-    }.padding(6)
+    }
   }
   @ViewBuilder private func railIndicator(_ d: Destination) -> some View {
     if d == .messages && store.messageUnread.counts.total > 0
@@ -221,22 +202,45 @@ struct RootView: View {
           Thumbnail(url: account.face, mode: .fill, placeholder: "person.crop.circle.fill")
             .frame(width: 32, height: 32).clipShape(
               Circle())
-            .frame(maxWidth: .infinity).contentShape(Rectangle())
+            .frame(width: 40, height: 40).contentShape(Rectangle())
         }.buttonStyle(.plain).menuIndicator(.hidden).help(account.name)
           .accessibilityLabel(account.name)
       } else if store.restoring {
-        ProgressView().controlSize(.small).frame(maxWidth: .infinity)
+        ProgressView().controlSize(.small).frame(width: 40, height: 40)
       } else {
         Button {
           store.login()
         } label: {
-          Image(systemName: "person.crop.circle").font(.title2).frame(maxWidth: .infinity)
+          Image(systemName: "person.crop.circle").font(.title2).frame(width: 40, height: 40)
         }.buttonStyle(.plain).help("登录").accessibilityLabel("登录")
       }
-    }.frame(height: AppLayout.toolbarHeight).floatingGlass(AppLayout.panelRadius)
+    }
+  }
+  private var searchField: some View {
+    HStack(spacing: 10) {
+      Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
+      TextField("搜索视频或粘贴 BV 号", text: $store.query).focused($searchFocused).textFieldStyle(.plain)
+        .onSubmit { store.search() }
+        .onExitCommand { searchFocused = false; NSApp.keyWindow?.makeFirstResponder(nil) }
+      if !store.query.isEmpty {
+        Button {
+          store.clearSearch()
+        } label: {
+          Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
+        }.buttonStyle(.plain).help("清除搜索")
+      }
+    }.padding(.horizontal, 15).frame(minWidth: 160, maxWidth: 520).frame(height: 44).appGlass(22)
   }
   private var topbar: some View {
-    HStack(spacing: 14) {
+    HStack(spacing: 10) {
+      accountAvatar
+      Divider().opacity(0.6).frame(height: 26)
+      navigationButtons([.recommend, .popular, .regions, .dynamic, .messages])
+      Divider().opacity(0.6).frame(height: 26)
+      navigationButtons([.history, .favorites, .later, .downloads, .profile, .web])
+      Divider().opacity(0.6).frame(height: 26)
+      searchField
+      Spacer(minLength: 0)
       if store.showPlayer {
         Button {
           store.backFromPlayer()
@@ -245,20 +249,6 @@ struct RootView: View {
         }.buttonStyle(.panel).keyboardShortcut(.leftArrow, modifiers: .command)
           .help(UserDefaults.standard.bool(forKey: "stopPlaybackOnBack") ? "返回并停止播放（⌘←）" : "返回，小窗口继续播放（⌘←）")
       }
-      HStack(spacing: 10) {
-        Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
-        TextField("搜索视频或粘贴 BV 号", text: $store.query).focused($searchFocused).textFieldStyle(.plain)
-          .onSubmit { store.search() }
-          .onExitCommand { searchFocused = false; NSApp.keyWindow?.makeFirstResponder(nil) }
-        if !store.query.isEmpty {
-          Button {
-            store.clearSearch()
-          } label: {
-            Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
-          }.buttonStyle(.plain).help("清除搜索")
-        }
-      }.padding(.horizontal, 15).frame(maxWidth: 520).frame(height: 44).appGlass(22)
-      Spacer(minLength: 0)
       Button {
         if store.showPlayer { store.playback.retry(api: store.api) } else { store.reload() }
       } label: {
