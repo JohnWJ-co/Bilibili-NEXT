@@ -144,6 +144,13 @@ struct PlaybackResume {
     let endMargin = min(10, Double(duration) * 0.1)
     return saved >= Double(duration) - endMargin ? 0 : saved
   }
+  /// 纯视频没有音轨，跳过音频线路选择，按静音播放。
+  nonisolated private func selectAudioRoute(
+    _ audio: MediaRepresentation?, cdn: CDNTransport
+  ) async throws -> CDNSelection? {
+    guard let audio else { return nil }
+    return try await cdn.select(audio, headers: API.mediaHeaders)
+  }
   func open(_ bvid: String, api: API, quality: Int? = nil, initialCID: Int? = nil, restoring: PlaybackResume? = nil, resume: @escaping (Int) -> Double) {
     stop()
     automaticRecoveries = 0
@@ -273,17 +280,17 @@ struct PlaybackResume {
         let source =
           fresh.videos.first { $0.id == qn && $0.codecs == candidate.codecs } ?? candidate
         async let selectedVideo = cdn.select(source, headers: API.mediaHeaders)
-        async let selectedAudio = cdn.select(fresh.audio, headers: API.mediaHeaders)
+        async let selectedAudio = selectAudioRoute(fresh.audio, cdn: cdn)
         let (videoRoute, audioRoute) = try await (selectedVideo, selectedAudio)
         try Task.checkCancellation()
         guard token == generation else { return }
         routeDiagnostics = fresh.diagnostics.merging([
-          "videoHost": videoRoute.host, "audioHost": audioRoute.host,
-          "videoProbeMS": String(videoRoute.milliseconds), "audioProbeMS": String(audioRoute.milliseconds),
-          "videoCandidates": String(videoRoute.candidateCount), "audioCandidates": String(audioRoute.candidateCount),
+          "videoHost": videoRoute.host, "audioHost": audioRoute?.host ?? "none",
+          "videoProbeMS": String(videoRoute.milliseconds), "audioProbeMS": String(audioRoute?.milliseconds ?? 0),
+          "videoCandidates": String(videoRoute.candidateCount), "audioCandidates": String(audioRoute?.candidateCount ?? 0),
           "attempt": String(index + 1), "codec": source.codecs,
-          "videoBitrate": String(source.bandwidth ?? 0), "audioBitrate": String(fresh.audio.bandwidth ?? 0),
-          "audioCodec": fresh.audio.codecs, "frameRate": String(source.videoAttributes?.frameRate ?? 0),
+          "videoBitrate": String(source.bandwidth ?? 0), "audioBitrate": String(fresh.audio?.bandwidth ?? 0),
+          "audioCodec": fresh.audio?.codecs ?? "none", "frameRate": String(source.videoAttributes?.frameRate ?? 0),
         ]) { _, current in current }
         startupMilliseconds["selected"] = elapsed()
         loadingMessage = "正在准备播放"
@@ -291,10 +298,13 @@ struct PlaybackResume {
         let (video, prepared) = try await withDeadline(seconds: 10) {
           let video = try await VideoSignalling.inspect(
             videoRoute.representation, client: HTTPRangeClient(streamer: cdn)).0
-          let prepared = try await activeBridge.prepare(
-            video: video, audio: audioRoute.representation, headers: API.mediaHeaders,
-            start: position > 0 ? position : nil)
-          return (video, prepared)
+          if let audioRoute {
+            return (video, try await activeBridge.prepare(
+              video: video, audio: audioRoute.representation, headers: API.mediaHeaders,
+              start: position > 0 ? position : nil))
+          }
+          return (video, try await activeBridge.prepare(
+            video: video, headers: API.mediaHeaders, start: position > 0 ? position : nil))
         }
         guard !Task.isCancelled, token == generation else {
           prepared.stop()

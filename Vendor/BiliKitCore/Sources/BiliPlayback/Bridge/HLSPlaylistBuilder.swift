@@ -272,23 +272,25 @@ public struct HLSMasterPlaylistBuilder: Sendable {
         subtitleRenditions: [HLSSubtitleRendition] = [],
         iFrameVariants: [HLSIFrameVariant] = [],
         localizedRenditionNamesURI: URL? = nil,
-        startOffsetSeconds: Double? = nil
+        startOffsetSeconds: Double? = nil,
+        allowsMissingAudio: Bool = false
     ) throws -> String {
         guard !videoVariants.isEmpty else {
             throw HLSPlaylistBuilderError.noVideoVariants
         }
-        guard !audioRenditions.isEmpty else {
-            throw HLSPlaylistBuilderError.unsupportedAudioRenditionCount(
-                audioRenditions.count
-            )
-        }
-        let defaultCount = audioRenditions.filter {
-            $0.selectedTrack.track.isDefault
-        }.count
-        guard defaultCount == 1 else {
-            throw HLSPlaylistBuilderError.invalidDefaultAudioRenditionCount(
-                defaultCount
-            )
+        if audioRenditions.isEmpty {
+            guard allowsMissingAudio else {
+                throw HLSPlaylistBuilderError.unsupportedAudioRenditionCount(0)
+            }
+        } else {
+            let defaultCount = audioRenditions.filter {
+                $0.selectedTrack.track.isDefault
+            }.count
+            guard defaultCount == 1 else {
+                throw HLSPlaylistBuilderError.invalidDefaultAudioRenditionCount(
+                    defaultCount
+                )
+            }
         }
         let audioGroupID =
             audioRenditions.count == 1
@@ -450,7 +452,10 @@ public struct HLSMasterPlaylistBuilder: Sendable {
             if let frameRate {
                 streamAttributes += ",FRAME-RATE=\(frameRate)"
             }
-            streamAttributes += ",CODECS=\"\(codecs)\",AUDIO=\"\(audioGroupID)\""
+            streamAttributes += ",CODECS=\"\(codecs)\""
+            if !audioRenditions.isEmpty {
+                streamAttributes += ",AUDIO=\"\(audioGroupID)\""
+            }
             if !subtitleRenditions.isEmpty {
                 streamAttributes += ",SUBTITLES=\"\(subtitleGroupID)\""
             }

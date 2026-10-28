@@ -264,6 +264,21 @@ struct HLSPlaylistBuilderTests {
     }
 
     @Test
+    func buildsVideoOnlyMasterPlaylistWhenMissingAudioIsAllowed() throws {
+        let index = try makeIndex(byteCounts: [1_000], durations: [1])
+
+        let playlist = try HLSMasterPlaylistBuilder().build(
+            videoVariants: [try makeVideoVariant(makeVideo(), index: index)],
+            audioRenditions: [],
+            allowsMissingAudio: true
+        )
+
+        #expect(playlist.contains("CODECS=\"avc1.640032\""))
+        #expect(!playlist.contains("AUDIO=\""))
+        #expect(!playlist.contains("#EXT-X-MEDIA:TYPE=AUDIO"))
+    }
+
+    @Test
     func buildsSystemSelectableMachineGeneratedAudioRendition() throws {
         let playlist = try HLSMasterPlaylistBuilder().build(
             videoVariants: [

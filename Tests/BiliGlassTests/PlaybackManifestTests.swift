@@ -56,7 +56,7 @@ private final class ManifestProtocol: URLProtocol, @unchecked Sendable {
     var badAudio = track(audio: true); badAudio["baseUrl"] = "https://invalid.example/audio.m4s"
     let parsed = try await streams([broken, track()], audio: [badAudio, track(audio: true)])
     #expect(parsed.videos.count == 1)
-    #expect(parsed.audio.codecs == "mp4a.40.2")
+    #expect(parsed.audio?.codecs == "mp4a.40.2")
   }
   @Test func segmentBaseAcceptsAllPublishedCasingsAndExtraMetadata() async throws {
     for key in ["SegmentBase", "segment_base", "segmentBase"] {
@@ -113,13 +113,10 @@ private final class ManifestProtocol: URLProtocol, @unchecked Sendable {
       #expect(error.diagnostics["manifest.video.0"]?.contains("address") == true)
     }
   }
-  @Test func missingAudioIsNotReportedAsVideoAddressFailure() async throws {
-    do {
-      _ = try await streams([track()], audio: [])
-      Issue.record("Expected missing audio")
-    } catch let error as StreamManifestError {
-      #expect(error.kind == "audio")
-      #expect(error.diagnostics["manifest.video.available"] == "1/1")
-    }
+  @Test func missingAudioParsesAsSilentVideo() async throws {
+    let parsed = try await streams([track()], audio: [])
+    #expect(parsed.videos.count == 1)
+    #expect(parsed.audio == nil)
+    #expect(parsed.diagnostics["manifest.audio.available"] == "0/0")
   }
 }

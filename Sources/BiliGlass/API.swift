@@ -67,7 +67,8 @@ struct Detail {
 }
 struct Streams {
   let videos: [MediaRepresentation]
-  let audio: MediaRepresentation
+  /// 部分视频（如纯屏幕录制）没有音轨；此时按静音视频播放。
+  let audio: MediaRepresentation?
   let names: [Int: String]
   var diagnostics: [String: String] = [:]
 }
@@ -483,8 +484,7 @@ final class Vault {
     diagnostics["manifest.video.available"] = "\(videos.count)/\(videoRows.count)"
     diagnostics["manifest.audio.available"] = "\(audios.count)/\(audioRows.count)"
     guard !videos.isEmpty else { throw StreamManifestError(kind: "video", diagnostics: diagnostics) }
-    guard let audio = audios.max(by: { ($0.bandwidth ?? 0) < ($1.bandwidth ?? 0) })
-    else { throw StreamManifestError(kind: "audio", diagnostics: diagnostics) }
+    let audio = audios.max(by: { ($0.bandwidth ?? 0) < ($1.bandwidth ?? 0) })
     var names: [Int: String] = [:]
     for f in d["support_formats"] as? [[String: Any]] ?? [] {
       if let id = f["quality"] as? Int {

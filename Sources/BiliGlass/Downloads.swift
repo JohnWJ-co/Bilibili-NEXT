@@ -347,21 +347,31 @@ enum ParallelMediaDownload {
         }
       }
       try Task.checkCancellation()
-      job.status = "下载音频"
-      persist()
-      let a = try await ParallelMediaDownload.fetch(
-        streams.audio, directory: temp.appendingPathComponent("audio"), threads: threads
-      ) { p in
-        Task { @MainActor in
-          guard job.runID == token, !job.cancelled, !job.finished, job.error == nil else { return }
-          job.progress = max(job.progress, 0.8 + p * 0.15)
+      let audioURL: URL?
+      if let audio = streams.audio {
+        job.status = "下载音频"
+        persist()
+        audioURL = try await ParallelMediaDownload.fetch(
+          audio, directory: temp.appendingPathComponent("audio"), threads: threads
+        ) { p in
+          Task { @MainActor in
+            guard job.runID == token, !job.cancelled, !job.finished, job.error == nil else { return }
+            job.progress = max(job.progress, 0.8 + p * 0.15)
+          }
         }
+        try Task.checkCancellation()
+      } else {
+        // 纯视频没有音轨，直接保存视频轨。
+        audioURL = nil
       }
-      try Task.checkCancellation()
       job.status = "合并音视频"
       persist()
       try? FileManager.default.removeItem(at: output)
-      try await Self.mux(video: v, audio: a, output: output)
+      if let audioURL {
+        try await Self.mux(video: v, audio: audioURL, output: output)
+      } else {
+        try await Self.saveVideoOnly(video: v, output: output)
+      }
       try Task.checkCancellation()
       let quality = streams.names[job.qn] ?? Self.qualityName(job.qn)
       let checkpoint = try await downloadIO { try DownloadPublication.prepare(output, quality: quality) }
@@ -418,12 +428,14 @@ enum ParallelMediaDownload {
     [16:"360P 流畅", 32:"480P 清晰", 64:"720P 高清", 74:"720P 60帧", 80:"1080P 高清",
      112:"1080P 高码率", 116:"1080P 60帧", 120:"4K", 125:"HDR", 126:"杜比视界", 127:"8K"][qn] ?? "\(qn)"
   }
-  static func validateMedia(_ url: URL) async throws {
+  static func validateMedia(_ url: URL, requiresAudio: Bool = true) async throws {
     let result = AVURLAsset(url: url)
     let duration = try await result.load(.duration).seconds
+    let audioCount = try await result.loadTracks(withMediaType: .audio).count
     guard duration.isFinite, duration > 0,
       try await result.loadTracks(withMediaType: .video).count == 1,
-      try await result.loadTracks(withMediaType: .audio).count == 1
+      audioCount <= 1,
+      !requiresAudio || audioCount == 1
     else { throw BiliError(text: "合并校验失败") }
   }
   #if os(macOS)
@@ -466,6 +478,13 @@ enum ParallelMediaDownload {
     #else
     try FileManager.default.removeItem(at: url)
     #endif
+  }
+  /// 无音轨视频直接保存视频轨，不再经过音视频合成。
+  static func saveVideoOnly(video: URL, output: URL) async throws {
+    try? FileManager.default.removeItem(at: output)
+    try FileManager.default.copyItem(at: video, to: output)
+    try await Task.detached(priority: .utility) { try MP4Compatibility.normalizeOwnedFile(output) }.value
+    try await validateMedia(output, requiresAudio: false)
   }
   static func mux(video: URL, audio: URL, output: URL) async throws {
     let v = AVURLAsset(url: video)

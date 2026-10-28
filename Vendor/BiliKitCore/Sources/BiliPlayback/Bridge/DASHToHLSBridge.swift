@@ -198,20 +198,22 @@ public struct DASHToHLSBridge: Sendable {
         let loadedAudioRenditions = try await audioRenditionsTask
         let videoVariants = try await loadedVideoVariants
         let subtitleCatalog = try await freezeCatalog(catalogTask)
-        guard
-            let canonicalAudio = loadedAudioRenditions.first(where: {
-                $0.selectedTrack.track.isDefault
-            })
-        else {
+        let canonicalAudio = loadedAudioRenditions.first {
+            $0.selectedTrack.track.isDefault
+        }
+        // 调用方显式传空音轨表示纯视频；只有“本应有音轨却全部加载失败”才算配置错误。
+        if !audioTracks.isEmpty, canonicalAudio == nil {
             throw DASHToHLSBridgeError.unsupportedAudioTrackCount(0)
         }
-        let audioRenditions = loadedAudioRenditions.filter { rendition in
-            rendition.selectedTrack.track.isDefault
-                || hasMatchingAudioTimeline(
-                    rendition.index.index,
-                    canonical: canonicalAudio.index.index
-                )
-        }
+        let audioRenditions: [LoadedAudioRendition] = canonicalAudio.map { canonical in
+            loadedAudioRenditions.filter { rendition in
+                rendition.selectedTrack.track.isDefault
+                    || hasMatchingAudioTimeline(
+                        rendition.index.index,
+                        canonical: canonical.index.index
+                    )
+            }
+        } ?? []
 
         let server = serverFactory()
         do {
@@ -362,7 +364,8 @@ public struct DASHToHLSBridge: Sendable {
                     subtitleRenditions: subtitleRenditions,
                     iFrameVariants: iFrameVariants,
                     localizedRenditionNamesURI: localizedRenditionNamesURL,
-                    startOffsetSeconds: startPositionSeconds
+                    startOffsetSeconds: startPositionSeconds,
+                    allowsMissingAudio: audioTracks.isEmpty
                 )
                 localizedSubtitleCatalog = subtitleCatalog
             } catch {
@@ -374,7 +377,8 @@ public struct DASHToHLSBridge: Sendable {
                     audioRenditions: hlsAudioRenditions,
                     iFrameVariants: iFrameVariants,
                     localizedRenditionNamesURI: localizedRenditionNamesURL,
-                    startOffsetSeconds: startPositionSeconds
+                    startOffsetSeconds: startPositionSeconds,
+                    allowsMissingAudio: audioTracks.isEmpty
                 )
                 localizedSubtitleCatalog = []
             }
