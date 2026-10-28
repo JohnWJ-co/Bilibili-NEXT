@@ -494,11 +494,16 @@ struct DanmakuComposer: View {
     @Bindable var dm = store.danmaku
     VStack(alignment: .leading, spacing: 7) {
       HStack {
-        Picker("位置", selection: $dm.mode) {
-          Text("滚动").tag(1)
-          Text("顶部").tag(5)
-          Text("底部").tag(4)
-        }.labelsHidden().frame(width: 90)
+        Menu {
+          Button("滚动") { dm.mode = 1 }
+          Button("顶部") { dm.mode = 5 }
+          Button("底部") { dm.mode = 4 }
+        } label: {
+          HStack(spacing: 4) {
+            Text(modeTitle(dm.mode))
+            Image(systemName: "chevron.up.chevron.down").imageScale(.small)
+          }
+        }.help("弹幕位置")
         Menu {
           Picker("字号", selection: $dm.fontSize) {
             Text("小").tag(18)
@@ -513,8 +518,13 @@ struct DanmakuComposer: View {
             Text("蓝色").tag(0x66CCFF)
             Text("紫色").tag(0xCC66FF)
           }
-        } label: { Image(systemName: "textformat") }
-          .menuStyle(.borderlessButton).fixedSize().help("发送样式")
+        } label: {
+          HStack(spacing: 4) {
+            Text("Aa")
+            Image(systemName: "chevron.down").imageScale(.small)
+          }
+        }
+          .fixedSize().help("发送样式")
         DanmakuSettingsButton()
         TextField(store.account == nil ? "登录后发送弹幕" : "发一条弹幕", text: $dm.message).textFieldStyle(
           .plain
@@ -528,7 +538,7 @@ struct DanmakuComposer: View {
           }
         }.buttonStyle(.panel).disabled(
           dm.sending || (store.account != nil && dm.message.isEmpty) || dm.message.count > 100)
-      }
+      }.buttonStyle(.panel)
       if dm.items.contains(where: { $0.mode == 9 || $0.mode == 7 }) {
         Label("高级弹幕 · 原生播放", systemImage: "sparkles").font(.caption).foregroundStyle(.secondary)
       }
@@ -547,6 +557,13 @@ struct DanmakuComposer: View {
       if let error = dm.sendError ?? dm.error ?? dm.specialError {
         Text(error).font(.caption).foregroundStyle(.secondary)
       }
+    }
+  }
+  private func modeTitle(_ mode: Int) -> String {
+    switch mode {
+    case 5: return "顶部"
+    case 4: return "底部"
+    default: return "滚动"
     }
   }
 }
