@@ -4,7 +4,6 @@ import UniformTypeIdentifiers
 import CoreImage
 
 enum AppLayout {
-  static let sidebarWidth: CGFloat = 224
   static let sidebarRailWidth: CGFloat = 56
   static let toolbarHeight: CGFloat = 68
   static let panelRadius: CGFloat = 24

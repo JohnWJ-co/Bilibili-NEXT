@@ -5,9 +5,6 @@ let biliPink = Color(red: 0.86, green: 0.24, blue: 0.43)
 struct RootView: View {
   @Bindable var store: Store
   @Environment(\.scenePhase) private var phase
-  @Environment(\.accessibilityReduceMotion) private var reduceMotion
-  @AppStorage("interfaceAnimations") private var animations = true
-  @AppStorage("sidebarCollapsed") private var sidebarCollapsed = false
   @FocusState private var searchFocused: Bool
   @State private var diagnosticChallenge: InteractionChallenge?
   var body: some View {
@@ -15,8 +12,8 @@ struct RootView: View {
       if !store.fullscreen.isPresented { GlassBackdrop() }
       GeometryReader { viewport in
       HStack(alignment: .top, spacing: 20) {
-        sidebar(compact: viewport.size.height < 820, collapsed: sidebarCollapsed)
-          .frame(width: sidebarWidth)
+        sidebar(compact: viewport.size.height < 820)
+          .frame(width: AppLayout.sidebarRailWidth)
         VStack(spacing: 16) {
           topbar
           if let reason = store.loginUpgradeReason, !store.loginUpgradeDismissed {
@@ -33,7 +30,6 @@ struct RootView: View {
             RoundedRectangle(cornerRadius: 24))
         }
       }.padding(.horizontal, 20).padding(.bottom, 20).padding(.top, 22)
-        .animation(sidebarAnimation, value: sidebarCollapsed)
         .opacity(store.fullscreen.isPresented ? 0 : 1)
         .allowsHitTesting(!store.fullscreen.isPresented)
         .accessibilityHidden(store.fullscreen.isPresented)
@@ -162,52 +158,23 @@ struct RootView: View {
       if !store.showPlayer { searchFocused = false; NSApp.keyWindow?.makeFirstResponder(nil) }
     }
   }
-  private var sidebarWidth: CGFloat {
-    sidebarCollapsed ? AppLayout.sidebarRailWidth : AppLayout.sidebarWidth
-  }
-  private var sidebarAnimation: Animation? {
-    animations && !reduceMotion ? .smooth(duration: 0.22) : nil
-  }
-  private func sidebar(compact: Bool, collapsed: Bool) -> some View {
+  private func sidebar(compact: Bool) -> some View {
     VStack(spacing: compact ? 14 : 20) {
-      HStack(spacing: 10) {
-        sidebarLogo(collapsed: collapsed)
-        if !collapsed {
-          Text("Bilibili NEXT").font(.title3.weight(.semibold))
-          Spacer(minLength: 0)
-        }
-      }.padding(.horizontal, collapsed ? 6 : 18).frame(height: AppLayout.toolbarHeight)
-        .floatingGlass(AppLayout.panelRadius).fixedSize(horizontal: false, vertical: true)
-      ScrollView {
-        // Glass sampling must stay inside the scrolling viewport. Sharing a
-        // container with the fixed account footer lets the scrolled glass/text
-        // render through that footer on short windows.
-        VStack(spacing: compact ? 14 : 20) {
-          if collapsed {
-            navigationRail(items: [.recommend, .popular, .regions, .dynamic, .messages])
-            navigationRail(items: [.history, .favorites, .later, .downloads, .profile, .web])
-          } else {
-            navigationGroup("浏览", items: [.recommend, .popular, .regions, .dynamic, .messages], compact: compact)
-            navigationGroup("资料库", items: [.history, .favorites, .later, .downloads, .profile, .web], compact: compact)
-          }
-        }.padding(2)
-      }.frame(minHeight: 0, maxHeight: .infinity)
-        .scrollIndicators(.hidden).compositingGroup().clipped()
-      accountFooter(collapsed: collapsed).fixedSize(horizontal: false, vertical: true)
+      // Logo and navigation share one panel, so the rail reads as a single
+      // floating column instead of three stacked cards.
+      VStack(spacing: 0) {
+        Image(systemName: "play.rectangle.fill").font(.title2).foregroundStyle(biliPink)
+          .frame(maxWidth: .infinity).frame(height: AppLayout.toolbarHeight)
+          .accessibilityLabel("Bilibili NEXT")
+        Divider().opacity(0.5).padding(.horizontal, 12)
+        navigationRail(items: [.recommend, .popular, .regions, .dynamic, .messages])
+        navigationRail(items: [.history, .favorites, .later, .downloads, .profile, .web])
+      }
+      .floatingGlass(AppLayout.panelRadius)
+      .clipShape(RoundedRectangle(cornerRadius: AppLayout.panelRadius))
+      Spacer(minLength: 0)
+      accountRail.fixedSize(horizontal: false, vertical: true)
     }.frame(maxHeight: .infinity)
-  }
-  // The logo is the only sidebar toggle; at rail width it fills the header so
-  // the whole card stays a comfortable hit target.
-  private func sidebarLogo(collapsed: Bool) -> some View {
-    Button {
-      sidebarCollapsed.toggle()
-    } label: {
-      Image(systemName: "play.rectangle.fill").font(.title2).foregroundStyle(biliPink)
-        .frame(maxWidth: collapsed ? .infinity : nil, maxHeight: collapsed ? .infinity : nil)
-        .contentShape(Rectangle())
-    }.buttonStyle(.plain).help(sidebarCollapsed ? "展开侧栏" : "收起侧栏")
-      .accessibilityLabel(sidebarCollapsed ? "展开侧栏" : "收起侧栏")
-      .keyboardShortcut("s", modifiers: [.command, .option])
   }
   private func navigationRail(items: [Destination]) -> some View {
     VStack(spacing: 4) {
@@ -228,7 +195,7 @@ struct RootView: View {
         }.buttonStyle(NavigationButtonStyle()).tint(.primary).help(d.rawValue)
           .accessibilityLabel(railLabel(d))
       }
-    }.padding(6).floatingGlass(24)
+    }.padding(6)
   }
   @ViewBuilder private func railIndicator(_ d: Destination) -> some View {
     if d == .messages && store.messageUnread.counts.total > 0
@@ -244,9 +211,6 @@ struct RootView: View {
       "\(d.rawValue)，\(store.downloads.activeCount) 个下载中"
     default: d.rawValue
     }
-  }
-  @ViewBuilder private func accountFooter(collapsed: Bool) -> some View {
-    if collapsed { accountRail } else { accountButton }
   }
   private var accountRail: some View {
     Group {
@@ -272,39 +236,7 @@ struct RootView: View {
           Image(systemName: "person.crop.circle").font(.title2).frame(maxWidth: .infinity)
         }.buttonStyle(.plain).help("登录").accessibilityLabel("登录")
       }
-    }.frame(height: 58).floatingGlass(20)
-  }
-  private func navigationGroup(_ title: String, items: [Destination], compact: Bool) -> some View {
-    VStack(alignment: .leading, spacing: 5) {
-      Text(title).font(.caption.weight(.semibold)).foregroundStyle(.secondary).padding(.leading, 12)
-        .padding(.bottom, 8)
-      ForEach(items) { d in
-        Button {
-          store.navigate(d)
-        } label: {
-          HStack(spacing: 12) {
-            Image(systemName: d.icon).frame(width: 20)
-            Text(d.rawValue)
-            Spacer(minLength: 0)
-            if d == .messages { MessageUnreadBadge(count: store.messageUnread.counts.total) }
-            if d == .downloads && store.downloads.activeCount > 0 {
-              Text("\(store.downloads.activeCount)").font(.caption.monospacedDigit())
-            }
-          }.font(
-            .system(
-              size: 14, weight: store.destination == d && !store.showPlayer ? .semibold : .regular)
-          )
-          .padding(.horizontal, 12).padding(.vertical, compact ? 7 : 11).contentShape(
-            RoundedRectangle(cornerRadius: 12)
-          )
-          .background(
-            store.destination == d && !store.showPlayer ? biliPink.opacity(0.19) : .clear,
-            in: .rect(cornerRadius: 12)
-          )
-          .foregroundStyle(.primary)
-        }.buttonStyle(NavigationButtonStyle()).tint(.primary)
-      }
-    }.padding(12).floatingGlass(24)
+    }.frame(height: 58).floatingGlass(AppLayout.panelRadius)
   }
   private var topbar: some View {
     HStack(spacing: 14) {
@@ -367,50 +299,6 @@ struct RootView: View {
         PlayerPage(store: store)
       }
     }
-  }
-  private var accountButton: some View {
-    Group {
-      if let account = store.account {
-        HStack(spacing: 10) {
-          Button {
-            store.navigate(.profile)
-          } label: {
-            HStack(spacing: 10) {
-              Thumbnail(url: account.face, mode: .fill, placeholder: "person.crop.circle.fill")
-                .frame(width: 32, height: 32).clipShape(
-                  Circle())
-              Text(account.name).lineLimit(1)
-              Spacer(minLength: 0)
-            }.contentShape(Rectangle())
-          }.buttonStyle(.plain)
-          Menu {
-            Button("我的主页") { store.navigate(.profile) }
-            SettingsLink { Text("设置") }
-            Button("重新登录") { store.login() }
-            Button("退出登录", role: .destructive) { store.logout() }
-          } label: {
-            Image(systemName: "ellipsis")
-          }
-          .menuStyle(.borderlessButton).frame(width: 20)
-        }.padding(12).frame(height: 58)
-      } else if store.restoring {
-        HStack {
-          ProgressView().controlSize(.small)
-          Text("恢复登录中").font(.callout)
-        }.padding(10)
-      } else {
-        Button {
-          store.login()
-        } label: {
-          HStack {
-            Image(systemName: "person.crop.circle").font(.title2)
-            Text("登录")
-            Spacer()
-            Image(systemName: "qrcode").foregroundStyle(.secondary)
-          }.padding(10).frame(maxWidth: .infinity).contentShape(.rect(cornerRadius: 20))
-        }.buttonStyle(.plain)
-      }
-    }.frame(maxWidth: .infinity).frame(height: 58).floatingGlass(20)
   }
   private var browse: some View {
     ScrollView {
